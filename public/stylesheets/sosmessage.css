@@ -1,0 +1,96 @@
+body {
+  padding-top: 40px;
+}
+
+section {
+  padding: 60px 0 0 0;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.alert-banner {
+  margin-top: 20px;
+}
+
+.main-add-button {
+    margin-right: 14px;
+    float: right;
+}
+
+.select-category {
+    float: left;
+}
+
+.select-category label {
+    font-weight: bold;
+    width: 30px;
+    padding-left: 10px;
+}
+
+.select-category .input {
+    margin-left: 100px;
+}
+
+#new-message-modal {
+  width: 600px;
+  margin: -240px 0 0 -300px;
+}
+
+.actions-col {
+  width: 200px;
+  text-align: center;
+}
+
+.actions-col a, .actions-col button {
+  margin-right: 5px;
+  float: right;
+}
+
+.actions-col.messages-actions-col {
+  width: 140px;
+}
+
+.actions-col.moderation-actions-col {
+  width: 140px;
+}
+
+.messages-count {
+  margin-left: 40px;
+}
+
+.btn.publish-button {
+  width: 70px;
+  margin-right: 25px;
+}
+
+.up-down-arrow {
+  width: 12px;
+  height: 10px;
+}
+
+.color-div {
+  width: 36px;
+  height: 28px;
+  border: 1px;
+  border-style: solid;
+  border-color: black;
+}
+
+.color-tip {
+  color: #bbbbbb;
+  margin-left: 10px;
+}
+
+.rating-col {
+  width: 80px;
+}
+
+.message-col {
+  width: 500px;
+}
+
+.moderation-message-col {
+  width: 380px;
+}
