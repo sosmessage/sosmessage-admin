@@ -13,7 +13,7 @@ import com.mongodb.DBObject
 import com.mongodb.casbah._
 import conf.SosMessageConfiguration
 
-case class Announcement(title: String, text: String, url: String, cancelButton: String, validateButton: String)
+case class Announcement(title: String, text: String, url: String, validateButton: String, cancelButton: String)
 
 object Announcements extends Controller {
 
