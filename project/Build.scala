@@ -6,7 +6,7 @@ import com.typesafe.sbtscalariform.ScalariformPlugin._
 
 object ApplicationBuild extends Build {
 
-    val appName         = "sosmessagedecarte-admin"
+    val appName         = "sosmessage-admin"
     val appVersion      = "2.0-SNAPSHOT"
 
     val appDependencies = Seq(
@@ -21,7 +21,7 @@ object ApplicationBuild extends Build {
         scalacOptions ++= Seq("-unchecked", "-deprecation")
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies).settings(defaultScalaSettings:_*)
-      .settings(buildSettings:_*).settings(scalariformSettings: _*)
+    val main = PlayProject(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*)
+      .settings(buildSettings: _*).settings(scalariformSettings: _*)
 
 }
