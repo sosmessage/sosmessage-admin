@@ -3,7 +3,7 @@
   newAppForm: play.api.data.Form[controllers.SosMessageApp]
 )(implicit flash: play.api.mvc.Flash)
 
-@main(selectedTab = "apps", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "apps", actionDone = flash.get("actionDone"), actionError = flash.get("actionError")) {
 
   <section id="apps">
 
@@ -71,6 +71,15 @@
                 <label for="@field.name">Name</label>
                 <div class="input">
                   <input class="xlarge" id="@field.name" name="@field.name" type="text" value="@field.value" />
+                </div>
+              }
+              @newAppForm.forField("lang") { field =>
+                <label for="@field.name">Lang</label>
+                <div class="input">
+                  <select id="@field.name" name="@field.name" type="text" value="@field.value">
+                    <option value="fr">fr</option>
+                    <option value="en">en</option>
+                  </select>
                 </div>
               }
               @newAppForm.forField("title") { field =>

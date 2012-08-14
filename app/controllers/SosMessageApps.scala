@@ -10,7 +10,7 @@ import com.mongodb.casbah._
 import com.mongodb.DBObject
 import java.util.Date
 
-case class SosMessageApp(name: String, title: String)
+case class SosMessageApp(name: String, lang: String, title: String)
 
 case class NewAnnouncement(id: String)
 case class NewCategory(id: String)
@@ -35,7 +35,11 @@ object SosMessageApps extends Controller {
 
   val appForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "name" -> (
+        nonEmptyText
+        verifying ("Should not contain '_' character.", name => { !name.contains("_") })
+      ),
+      "lang" -> nonEmptyText,
       "title" -> nonEmptyText
     )(SosMessageApp.apply)(SosMessageApp.unapply)
   )
@@ -65,14 +69,19 @@ object SosMessageApps extends Controller {
         Redirect(routes.SosMessageApps.index)
       },
       app => {
-        val builder = MongoDBObject.newBuilder
-        builder += "name" -> app.name
-        builder += "title" -> app.title
-        builder += "createdAt" -> new Date()
-        builder += "modifiedAt" -> new Date()
-        appsCollection += builder.result
-
-        Redirect(routes.SosMessageApps.index).flashing("actionDone" -> "appAdded")
+        val appName = app.name + "_" + app.lang
+        appsCollection.findOne(MongoDBObject("name" -> appName)) match {
+          case Some(app) => Redirect(routes.SosMessageApps.index).flashing("actionError" -> "appAlreadyExists")
+          case None => {
+            val builder = MongoDBObject.newBuilder
+            builder += "name" -> appName
+            builder += "title" -> app.title
+            builder += "createdAt" -> new Date()
+            builder += "modifiedAt" -> new Date()
+            appsCollection += builder.result
+            Redirect(routes.SosMessageApps.index).flashing("actionDone" -> "appAdded")
+          }
+        }
       }
     )
   }

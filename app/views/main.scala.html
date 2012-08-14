@@ -1,6 +1,7 @@
 @(
   selectedTab: String = "none",
-  actionDone: Option[String] = None
+  actionDone: Option[String] = None,
+  actionError: Option[String] = None
 )(content: Html)
 
 <!DOCTYPE html>
@@ -68,6 +69,18 @@
                  @if(message == "waitingMessagesRejected") { All waiting messages <strong>rejected</strong>! }
                  @if(message == "rejectedMessagesDeleted") { All rejected messages <strong>deleted</strong>! }
                  @if(message == "rejectedMessagesApproved") { All rejected messages <strong>approved</strong>! }
+               </p>
+             </div>
+             <div class="span-one-third">&nbsp;</div>
+           </div>
+         }
+         @actionError.map { message =>
+           <div class="row alert-banner">
+             <div class="span-one-third">&nbsp;</div>
+             <div class="alert-message error fade in span-one-third" data-alert="alert">
+               <a class="close" href="#">x</a>
+               <p>
+                 @if(message == "appAlreadyExists") { The App already <strong>exists</strong>! }
                </p>
              </div>
              <div class="span-one-third">&nbsp;</div>
