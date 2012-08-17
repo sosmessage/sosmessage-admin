@@ -7,7 +7,7 @@ import com.typesafe.sbtscalariform.ScalariformPlugin._
 object ApplicationBuild extends Build {
 
     val appName         = "sosmessage-admin"
-    val appVersion      = "2.0-SNAPSHOT"
+    val appVersion      = "2.0"
 
     val appDependencies = Seq(
       "org.streum" %% "configrity" % "0.9.0",
