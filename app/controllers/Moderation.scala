@@ -4,7 +4,7 @@ import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import org.bson.types.ObjectId
-import com.mongodb.casbah._
+import com.mongodb.casbah.query.Imports._
 import conf.SosMessageConfiguration
 import java.util.Date
 

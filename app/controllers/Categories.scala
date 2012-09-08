@@ -10,7 +10,7 @@ import com.mongodb.casbah.MongoConnection
 import org.bson.types.ObjectId
 import java.util.Date
 import com.mongodb.DBObject
-import com.mongodb.casbah._
+import com.mongodb.casbah.query.Imports._
 import conf.SosMessageConfiguration
 
 case class Category(name: String, color: String)

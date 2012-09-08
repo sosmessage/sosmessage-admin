@@ -2,7 +2,6 @@ import sbt._
 import sbt.Keys._
 
 import PlayProject._
-import com.typesafe.sbtscalariform.ScalariformPlugin._
 
 object ApplicationBuild extends Build {
 
@@ -10,9 +9,8 @@ object ApplicationBuild extends Build {
     val appVersion      = "2.1-SNAPSHOT"
 
     val appDependencies = Seq(
-      "org.streum" %% "configrity" % "0.9.0",
-      "com.mongodb.casbah" %% "casbah" % "3.0.0-SNAPSHOT",
-      "net.liftweb" %% "lift-json" % "2.4-M4",
+      "org.mongodb" %% "casbah" % "2.4.1",
+      "org.streum" %% "configrity-core" % "0.10.2",
       "commons-lang" % "commons-lang" % "2.6"
     )
 
@@ -22,6 +20,6 @@ object ApplicationBuild extends Build {
     )
 
     val main = PlayProject(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*)
-      .settings(buildSettings: _*).settings(scalariformSettings: _*)
+      .settings(buildSettings: _*)
 
 }

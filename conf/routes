@@ -37,8 +37,8 @@ GET       /admin/categories/:categoryId                   controllers.Categories
 POST      /admin/categories/:categoryId                   controllers.Categories.update(categoryId: String)
 
 # Messages
-GET       /admin/messages                                             controllers.Messages.index(categoryId: Option[String] = None)
-GET       /admin/categories/:categoryId/messages                      controllers.Messages.index(categoryId: Option[String])
+GET       /admin/messages                                             controllers.Messages.indexNoCategory
+GET       /admin/categories/:categoryId/messages                      controllers.Messages.index(categoryId: String)
 POST      /admin/categories/:categoryId/messages                      controllers.Messages.save(categoryId: String)
 POST      /admin/categories/:categoryId/messages/:messageId/delete    controllers.Messages.delete(categoryId: String, messageId: String)
 GET       /admin/categories/:categoryId/messages/:messageId           controllers.Messages.edit(categoryId: String, messageId: String)
@@ -53,6 +53,9 @@ POST      /admin/moderation/messages/:messageId/delete         controllers.Moder
 POST      /admin/moderation/messages/all/:state/delete         controllers.Moderation.deleteAll(state: String)
 POST      /admin/moderation/messages/all/:state/approve        controllers.Moderation.approveAll(state: String)
 POST      /admin/moderation/messages/all/:state/reject         controllers.Moderation.rejectAll(state: String)
+
+# Event logs
+GET       /admin/stats                                    controllers.Statistics.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET       /admin/assets/*file                             controllers.Assets.at(path="/public", file)

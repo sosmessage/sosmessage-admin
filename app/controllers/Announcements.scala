@@ -1,16 +1,14 @@
 package controllers
 
-import play.api._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.data.validation.Constraints._
 import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import org.bson.types.ObjectId
 import java.util.Date
 import com.mongodb.DBObject
-import com.mongodb.casbah._
+import com.mongodb.casbah.query.Imports._
 import conf.SosMessageConfiguration
 
 case class Announcement(title: String, text: String, url: String, validateButton: String, cancelButton: String)

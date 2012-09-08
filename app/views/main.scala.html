@@ -32,8 +32,9 @@
             <li @if(selectedTab == "apps") {class="active"}><a href="@routes.SosMessageApps.index">Apps</a></li>
             <li @if(selectedTab == "announcements") {class="active"}><a href="@routes.Announcements.index">Announcements</a></li>
             <li @if(selectedTab == "categories") {class="active"}><a href="@routes.Categories.index">Categories</a></li>
-            <li @if(selectedTab == "messages") {class="active"}><a href="@routes.Messages.index(None)">Messages</a></li>
+            <li @if(selectedTab == "messages") {class="active"}><a href="@routes.Messages.indexNoCategory">Messages</a></li>
             <li @if(selectedTab == "moderation") {class="active"}><a href="@routes.Moderation.index("waiting")">Moderation</a></li>
+            <li @if(selectedTab == "stats") {class="active"}><a href="@routes.Statistics.index">Statistics</a></li>
           </ul>
         </div>
       </div>

@@ -6,8 +6,9 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 import play.api.mvc._
 import conf.SosMessageConfiguration
-import com.mongodb.casbah._
+import com.mongodb.casbah.query.Imports._
 import com.mongodb.DBObject
+import com.mongodb.casbah.MongoConnection
 import java.util.Date
 
 case class SosMessageApp(name: String, lang: String, title: String)

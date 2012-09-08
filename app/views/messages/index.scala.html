@@ -22,7 +22,7 @@
             @categories.map { category =>
               <option value="@category.get("_id")"
                 @if(category.get("_id") == selectedCategoryId) {selected="selected"}
-                sosmessage-redirect-url="@routes.Messages.index(Some(category.get("_id").toString))">
+                sosmessage-redirect-url="@routes.Messages.index(category.get("_id").toString)">
                 @category.get("name")
               </option>
             }
@@ -67,8 +67,8 @@
               </td>
               <td class="align-right rating-col">
                 <div data-rating-start="@message.get("rating")"
-                  data-rating-count="@message.get("ratingCount").asInstanceOf[Double].toLong"></div>
-                (@message.get("ratingCount").asInstanceOf[Double].toLong ratings)
+                  data-rating-count="@message.get("ratingCount").asInstanceOf[Long]"></div>
+                (@message.get("ratingCount").asInstanceOf[Long] ratings)
               </td>
               <td class="actions-col messages-actions-col">
                 <form action="@routes.Messages.delete(selectedCategoryId, message.get("_id").toString)" method="POST"
