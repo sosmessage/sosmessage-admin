@@ -56,7 +56,7 @@ object Messages extends Controller {
 
       val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
       val order = MongoDBObject("createdAt" -> -1)
-      val messages = messagesCollection.find(q).limit(1000).sort(order).toSeq.map( message =>
+      val messages = messagesCollection.find(q).limit(0).sort(order).toSeq.map( message =>
         computeRatingInformation(message).asDBObject
       )
       Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm))
