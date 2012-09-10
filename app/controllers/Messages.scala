@@ -8,25 +8,15 @@ import org.bson.types.ObjectId
 import java.util.Date
 import com.mongodb.DBObject
 import com.mongodb.casbah.query.Imports._
-import conf.SosMessageConfiguration
-import com.mongodb.casbah.MongoConnection
+import db.DB
 
 case class Message(categoryId: String, text: String, contributorName: String,
   approved: Option[String])
 
 object Messages extends Controller {
 
-  val config = SosMessageConfiguration.getConfig
-
   val CategoriesCollectionName = "categories"
   val MessagesCollectionName = "messages"
-
-  val dataBaseName = config[String]("database.name", "sosmessage")
-
-  val mongo = MongoConnection(config[String]("database.host", "127.0.0.1"), config[Int]("database.port", 27017))
-
-  val categoriesCollection = mongo(dataBaseName)(CategoriesCollectionName)
-  val messagesCollection = mongo(dataBaseName)(MessagesCollectionName)
 
   val messageForm = Form(
     mapping(
@@ -39,27 +29,36 @@ object Messages extends Controller {
 
   def indexNoCategory = Action {
     implicit request =>
-      val categoryOrder = MongoDBObject("name" -> 1)
-      val categories = categoriesCollection.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
-        a :: l
-      ).reverse
-      val categoryId = categories(0).get("_id").toString
-      Redirect(routes.Messages.index(categoryId))
+      DB.collection(CategoriesCollectionName) {
+        c =>
+          val categoryOrder = MongoDBObject("name" -> 1)
+          val categories = c.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
+            a :: l
+          ).reverse
+          val categoryId = categories(0).get("_id").toString
+          Redirect(routes.Messages.index(categoryId))
+      }
   }
 
   def index(categoryId: String) = Action {
     implicit request =>
-      val categoryOrder = MongoDBObject("name" -> 1)
-      val categories = categoriesCollection.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
-        a :: l
-      ).reverse
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          val categoryOrder = MongoDBObject("name" -> 1)
+          val categories = categoriesCollection.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
+            a :: l
+          ).reverse
 
-      val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-      val order = MongoDBObject("createdAt" -> -1)
-      val messages = messagesCollection.find(q).limit(0).sort(order).toSeq.map( message =>
-        computeRatingInformation(message).asDBObject
-      )
-      Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm))
+          DB.collection(MessagesCollectionName) {
+            messagesCollection =>
+              val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+              val order = MongoDBObject("createdAt" -> -1)
+              val messages = messagesCollection.find(q).limit(0).sort(order).toSeq.map( message =>
+                computeRatingInformation(message).asDBObject
+              )
+              Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm))
+          }
+      }
   }
 
   def computeRatingInformation(message: MongoDBObject): MongoDBObject = {
@@ -99,55 +98,68 @@ object Messages extends Controller {
           Redirect(routes.Messages.index(selectedCategoryId))
         },
         message => {
-          val oid = new ObjectId(message.categoryId)
-          val q = MongoDBObject("_id" -> oid)
-          val category = categoriesCollection.findOne(q).get
-          val builder = MongoDBObject.newBuilder
-          builder += "categoryId" -> category.get("_id")
-          builder += "category" -> category.get("name")
-          builder += "text" -> message.text
-          builder += "contributorName" -> message.contributorName
-          val actionDone = message.approved match {
-            case None =>
-              builder += "state" -> "waiting"
-              "messageWaiting"
-            case Some(s) =>
-              builder += "state" -> "approved"
-              val o = $set("lastAddedMessageAt" -> new Date())
-              categoriesCollection.update(q, o, false, false)
-              "messageAdded"
-          }
-          builder += "createdAt" -> new Date()
-          builder += "modifiedAt" -> new Date()
-          builder += "random" -> scala.math.random
-          messagesCollection += builder.result
+          DB.collection(MessagesCollectionName) {
+            c =>
+              val oid = new ObjectId(message.categoryId)
+              val q = MongoDBObject("_id" -> oid)
+              val category = c.findOne(q).get
+              val builder = MongoDBObject.newBuilder
+              builder += "categoryId" -> category.get("_id")
+              builder += "category" -> category.get("name")
+              builder += "text" -> message.text
+              builder += "contributorName" -> message.contributorName
+              val actionDone = message.approved match {
+                case None =>
+                  builder += "state" -> "waiting"
+                  "messageWaiting"
+                case Some(s) =>
+                  builder += "state" -> "approved"
+                  val o = $set("lastAddedMessageAt" -> new Date())
+                  c.update(q, o, false, false)
+                  "messageAdded"
+              }
+              builder += "createdAt" -> new Date()
+              builder += "modifiedAt" -> new Date()
+              builder += "random" -> scala.math.random
+              c += builder.result
 
-          Redirect(routes.Messages.index(category.get("_id").toString)).flashing("actionDone" -> actionDone)
+              Redirect(routes.Messages.index(category.get("_id").toString)).flashing("actionDone" -> actionDone)
+          }
         }
       )
   }
 
   def delete(selectedCategoryId: String, messageId: String) = Action {
     implicit request =>
-      val oid = new ObjectId(messageId)
-      val o = MongoDBObject("_id" -> oid)
-      messagesCollection.remove(o)
-      Redirect(routes.Messages.index(selectedCategoryId)).flashing("actionDone" -> "messageDeleted")
+      DB.collection(MessagesCollectionName) {
+        c =>
+          val oid = new ObjectId(messageId)
+          val o = MongoDBObject("_id" -> oid)
+          c.remove(o)
+          Redirect(routes.Messages.index(selectedCategoryId)).flashing("actionDone" -> "messageDeleted")
+      }
   }
 
   def edit(categoryId: String, messageId: String) = Action {
     implicit request =>
-      val categoryOrder = MongoDBObject("name" -> 1)
-      val categories = categoriesCollection.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
-        a :: l
-      ).reverse
-      val q = MongoDBObject("_id" -> new ObjectId(messageId))
-      messagesCollection.findOne(q).map {
-        message =>
-          val m = Message(message.get("categoryId").toString, message.get("text").toString,
-            message.get("contributorName").toString, None)
-          Ok(views.html.messages.edit(categories, categoryId, messageId, messageForm.fill(m)))
-      }.getOrElse(NotFound)
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          val categoryOrder = MongoDBObject("name" -> 1)
+          val categories = categoriesCollection.find().sort(categoryOrder).foldLeft(List[DBObject]())((l, a) =>
+            a :: l
+          ).reverse
+
+          DB.collection(MessagesCollectionName) {
+            messagesCollection =>
+              val q = MongoDBObject("_id" -> new ObjectId(messageId))
+              messagesCollection.findOne(q).map {
+                message =>
+                  val m = Message(message.get("categoryId").toString, message.get("text").toString,
+                    message.get("contributorName").toString, None)
+                  Ok(views.html.messages.edit(categories, categoryId, messageId, messageForm.fill(m)))
+              }.getOrElse(NotFound)
+          }
+      }
   }
 
   def update(categoryId: String, messageId: String) = Action {
@@ -157,12 +169,15 @@ object Messages extends Controller {
           Redirect(routes.Messages.index(categoryId))
         },
         message => {
-          val newCategoryId = message.categoryId
-          val q = MongoDBObject("_id" -> new ObjectId(messageId))
-          val o = $set("categoryId" -> new ObjectId(newCategoryId), "text" -> message.text,
-            "contributorName" -> message.contributorName, "modifiedAt" -> new Date())
-          messagesCollection.update(q, o, false, false)
-          Redirect(routes.Messages.index(newCategoryId)).flashing("actionDone" -> "messageUpdated")
+          DB.collection(MessagesCollectionName) {
+            c =>
+              val newCategoryId = message.categoryId
+              val q = MongoDBObject("_id" -> new ObjectId(messageId))
+              val o = $set("categoryId" -> new ObjectId(newCategoryId), "text" -> message.text,
+                "contributorName" -> message.contributorName, "modifiedAt" -> new Date())
+              c.update(q, o, false, false)
+              Redirect(routes.Messages.index(newCategoryId)).flashing("actionDone" -> "messageUpdated")
+          }
         }
       )
   }
