@@ -2,60 +2,63 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+GET       /javascriptRoutes     controllers.Application.javascriptRoutes
+
 # Home page
-GET       /admin                                          controllers.Application.index
+GET       /                                          controllers.Application.index
 
 # Apps
-GET       /admin/apps                               controllers.SosMessageApps.index
-POST      /admin/apps                               controllers.SosMessageApps.save
-POST      /admin/apps/:id/delete                    controllers.SosMessageApps.delete(id: String)
-GET       /admin/apps/:appId/categories             controllers.SosMessageApps.categories(appId: String)
-POST      /admin/apps/:appId/categories             controllers.SosMessageApps.addCategory(appId: String)
-POST      /admin/apps/:appId/categories/:categoryId/remove            controllers.SosMessageApps.removeCategory(appId: String, categoryId: String)
-POST      /admin/apps/:appId/categories/:categoryId/moveup            controllers.SosMessageApps.moveCategoryUp(appId: String, categoryId: String)
-POST      /admin/apps/:appId/categories/:categoryId/movedown          controllers.SosMessageApps.moveCategoryDown(appId: String, categoryId: String)
-POST      /admin/apps/:appId/categories/:categoryId/publish           controllers.SosMessageApps.publishCategory(appId: String, categoryId: String)
-POST      /admin/apps/:appId/categories/:categoryId/unpublish         controllers.SosMessageApps.unpublishCategory(appId: String, categoryId: String)
-GET       /admin/apps/:appId/announcements             controllers.SosMessageApps.announcements(appId: String)
-POST      /admin/apps/:appId/announcements             controllers.SosMessageApps.addAnnouncement(appId: String)
-POST      /admin/apps/:appId/announcements/:announcementId/remove            controllers.SosMessageApps.removeAnnouncement(appId: String, announcementId: String)
-POST      /admin/apps/:appId/announcements/:announcementId/publish           controllers.SosMessageApps.publishAnnouncement(appId: String, announcementId: String)
-POST      /admin/apps/:appId/announcements/:announcementId/unpublish         controllers.SosMessageApps.unpublishAnnouncement(appId: String, announcementId: String)
+GET       /apps                               controllers.SosMessageApps.index
+POST      /apps                               controllers.SosMessageApps.save
+POST      /apps/:id/delete                    controllers.SosMessageApps.delete(id: String)
+GET       /apps/:appId/categories             controllers.SosMessageApps.categories(appId: String)
+POST      /apps/:appId/categories             controllers.SosMessageApps.addCategory(appId: String)
+POST      /apps/:appId/categories/:categoryId/remove            controllers.SosMessageApps.removeCategory(appId: String, categoryId: String)
+POST      /apps/:appId/categories/:categoryId/moveup            controllers.SosMessageApps.moveCategoryUp(appId: String, categoryId: String)
+POST      /apps/:appId/categories/:categoryId/movedown          controllers.SosMessageApps.moveCategoryDown(appId: String, categoryId: String)
+POST      /apps/:appId/categories/:categoryId/publish           controllers.SosMessageApps.publishCategory(appId: String, categoryId: String)
+POST      /apps/:appId/categories/:categoryId/unpublish         controllers.SosMessageApps.unpublishCategory(appId: String, categoryId: String)
+GET       /apps/:appId/announcements             controllers.SosMessageApps.announcements(appId: String)
+POST      /apps/:appId/announcements             controllers.SosMessageApps.addAnnouncement(appId: String)
+POST      /apps/:appId/announcements/:announcementId/remove            controllers.SosMessageApps.removeAnnouncement(appId: String, announcementId: String)
+POST      /apps/:appId/announcements/:announcementId/publish           controllers.SosMessageApps.publishAnnouncement(appId: String, announcementId: String)
+POST      /apps/:appId/announcements/:announcementId/unpublish         controllers.SosMessageApps.unpublishAnnouncement(appId: String, announcementId: String)
 
 # Announcements
-GET       /admin/announcements                               controllers.Announcements.index
-POST      /admin/announcements                               controllers.Announcements.save
-POST      /admin/announcements/:id/delete                    controllers.Announcements.delete(id: String)
-GET       /admin/announcements/:id                           controllers.Announcements.edit(id: String)
-POST      /admin/announcements/:id                           controllers.Announcements.update(id: String)
+GET       /announcements                               controllers.Announcements.index
+POST      /announcements                               controllers.Announcements.save
+POST      /announcements/:id/delete                    controllers.Announcements.delete(id: String)
+GET       /announcements/:id                           controllers.Announcements.edit(id: String)
+POST      /announcements/:id                           controllers.Announcements.update(id: String)
 
 # Categories
-GET       /admin/categories                               controllers.Categories.index
-POST      /admin/categories                               controllers.Categories.save
-POST      /admin/categories/:id/delete                    controllers.Categories.delete(id: String)
-GET       /admin/categories/:categoryId                   controllers.Categories.edit(categoryId: String)
-POST      /admin/categories/:categoryId                   controllers.Categories.update(categoryId: String)
+GET       /categories                               controllers.Categories.index
+POST      /categories                               controllers.Categories.save
+POST      /categories/:id/delete                    controllers.Categories.delete(id: String)
+GET       /categories/:categoryId                   controllers.Categories.edit(categoryId: String)
+POST      /categories/:categoryId                   controllers.Categories.update(categoryId: String)
 
 # Messages
-GET       /admin/messages                                             controllers.Messages.indexNoCategory
-GET       /admin/categories/:categoryId/messages                      controllers.Messages.index(categoryId: String)
-POST      /admin/categories/:categoryId/messages                      controllers.Messages.save(categoryId: String)
-POST      /admin/categories/:categoryId/messages/:messageId/delete    controllers.Messages.delete(categoryId: String, messageId: String)
-GET       /admin/categories/:categoryId/messages/:messageId           controllers.Messages.edit(categoryId: String, messageId: String)
-POST      /admin/categories/:categoryId/messages/:messageId           controllers.Messages.update(categoryId: String, messageId: String)
+GET       /messages                                             controllers.Messages.indexNoCategory
+GET       /categories/:categoryId/messages                      controllers.Messages.index(categoryId: String)
+POST      /categories/:categoryId/messages                      controllers.Messages.save(categoryId: String)
+POST      /categories/:categoryId/messages/:messageId/delete    controllers.Messages.delete(categoryId: String, messageId: String)
+GET       /categories/:categoryId/messages/:messageId           controllers.Messages.edit(categoryId: String, messageId: String)
+POST      /categories/:categoryId/messages/:messageId           controllers.Messages.update(categoryId: String, messageId: String)
 
 # Moderation
-GET       /admin/moderation                                    controllers.Moderation.index(state = "waiting")
-GET       /admin/moderation/:state                             controllers.Moderation.index(state: String)
-POST      /admin/moderation/messages/:messageId/approve        controllers.Moderation.approve(messageId: String, selectedTab: String)
-POST      /admin/moderation/messages/:messageId/reject         controllers.Moderation.reject(messageId: String, selectedTab: String)
-POST      /admin/moderation/messages/:messageId/delete         controllers.Moderation.delete(messageId: String, selectedTab: String)
-POST      /admin/moderation/messages/all/:state/delete         controllers.Moderation.deleteAll(state: String)
-POST      /admin/moderation/messages/all/:state/approve        controllers.Moderation.approveAll(state: String)
-POST      /admin/moderation/messages/all/:state/reject         controllers.Moderation.rejectAll(state: String)
+GET       /moderation                                    controllers.Moderation.index(state = "waiting")
+GET       /moderation/:state                             controllers.Moderation.index(state: String)
+POST      /moderation/messages/:messageId/approve        controllers.Moderation.approve(messageId: String, selectedTab: String)
+POST      /moderation/messages/:messageId/reject         controllers.Moderation.reject(messageId: String, selectedTab: String)
+POST      /moderation/messages/:messageId/delete         controllers.Moderation.delete(messageId: String, selectedTab: String)
+POST      /moderation/messages/all/:state/delete         controllers.Moderation.deleteAll(state: String)
+POST      /moderation/messages/all/:state/approve        controllers.Moderation.approveAll(state: String)
+POST      /moderation/messages/all/:state/reject         controllers.Moderation.rejectAll(state: String)
 
 # Event logs
-GET       /admin/stats                                    controllers.Statistics.index
+GET       /stats                                    controllers.Statistics.index
+GET       /stats/hello                              controllers.Statistics.hello
 
 # Map static resources from the /public folder to the /assets URL path
-GET       /admin/assets/*file                             controllers.Assets.at(path="/public", file)
+GET       /assets/*file                             controllers.Assets.at(path="/public", file)
