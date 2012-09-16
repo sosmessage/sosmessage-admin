@@ -65,7 +65,7 @@ object Messages extends Controller {
     message.get("ratings") match {
       case None => {
         val builder = MongoDBObject.newBuilder
-        builder += ("ratingCount" -> 0)
+        builder += ("ratingCount" -> 0L)
         builder += ("rating" -> 0.0)
         message.putAll(builder.result())
       }

@@ -57,8 +57,10 @@ POST      /moderation/messages/all/:state/approve        controllers.Moderation.
 POST      /moderation/messages/all/:state/reject         controllers.Moderation.rejectAll(state: String)
 
 # Event logs
-GET       /stats                                    controllers.Statistics.index
-GET       /stats/hello                              controllers.Statistics.hello
+GET       /stats                                            controllers.Statistics.index
+GET       /stats/requestsStats                              controllers.Statistics.requestsStats
+GET       /stats/usersStats                                 controllers.Statistics.usersStats
+GET       /stats/appsStats                                  controllers.Statistics.appsStats
 
 # Map static resources from the /public folder to the /assets URL path
 GET       /assets/*file                             controllers.Assets.at(path="/public", file)

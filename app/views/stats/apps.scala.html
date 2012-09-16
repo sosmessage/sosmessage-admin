@@ -1,0 +1,16 @@
+@(
+  totalCount: Long,
+  appsCount: Seq[com.mongodb.DBObject]
+)
+  <div>
+
+    <table class="table table-condensed">
+      @appsCount.map { appCount =>
+        <tr>
+          <td>@appCount.get("appName")</td>
+          <td>@{"%2.2f".format(appCount.get("csum").asInstanceOf[Double] * 100 / totalCount)}%</td>
+        </tr>
+      }
+    </table>
+
+  </div>
