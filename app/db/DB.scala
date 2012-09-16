@@ -1,15 +1,22 @@
 package db
 
-import com.mongodb.casbah.{MongoCollection, MongoConnection}
+import com.mongodb.casbah.{MongoURI, MongoCollection, MongoConnection}
 import conf.SosMessageConfig
+import org.streum.configrity.Configuration
 
 object DB {
 
+  val DefaultMongoUri = "mongodb://localhost/sosmessage"
+
   lazy val db = {
-    val mongo = MongoConnection(SosMessageConfig[String]("database.host").getOrElse("127.0.0.1"),
-      SosMessageConfig[Int]("database.port").getOrElse(27017))
-    val dataBaseName = SosMessageConfig[String]("database.name").getOrElse("sosmessage")
-    mongo(dataBaseName)
+    val env = Configuration.environment
+    val uri = MongoURI(env("MONGOLAB_URI", DefaultMongoUri))
+    val mongo = MongoConnection(uri)
+    val db = mongo(uri.database.getOrElse("sosmessage"))
+    uri.username.map(name =>
+      db.authenticate(name, uri.password.getOrElse(Array("")).foldLeft("")(_ + _.toString))
+    )
+    db
   }
 
   def collection[T](name: String)(f: MongoCollection => T): T = f(db(name))
