@@ -3,23 +3,26 @@
   <section id="stats">
 
     <div class="row">
-      <div class="span4">
+      <div id="stats-requests" class="span4">
         <div class="well well-small">
-          Requests
+          <div class="floatL">Requests</div>
+          <div class="floatR js-loading" style="display:none"><img src="@routes.Assets.at("images/loading.gif")" /></div>
         </div>
-        <div id="stats-requests"></div>
+        <div class="js-stats-content"></div>
       </div>
-      <div class="span4">
+      <div id="stats-users" class="span4">
         <div class="well well-small">
-          Users
+          <div class="floatL">Users</div>
+          <div class="floatR js-loading" style="display:none"><img src="@routes.Assets.at("images/loading.gif")" /></div>
         </div>
-        <div id="stats-users"></div>
+        <div class="js-stats-content"></div>
       </div>
-      <div class="span4">
+      <div id="stats-apps" class="span4">
         <div class="well well-small">
-          Apps
+          <div class="floatL">Apps</div>
+          <div class="floatR js-loading" style="display:none"><img src="@routes.Assets.at("images/loading.gif")" /></div>
         </div>
-        <div id="stats-apps"></div>
+        <div class="js-stats-content"></div>
       </div>
     </div>
 
