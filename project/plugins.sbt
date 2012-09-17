@@ -10,7 +10,6 @@ resolvers += Resolver.url("Play", url("https://playframework2.ci.cloudbees.com/j
 
 resolvers ++= Seq(
   Resolver.url("Typesafe Ivy Snapshots", url("http://repo.typesafe.com/typesafe/ivy-snapshots/"))(Resolver.ivyStylePatterns),
-  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
-  "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/")
+  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/")
 
 addSbtPlugin("play" % "sbt-plugin" % "2.1-SNAPSHOT")
