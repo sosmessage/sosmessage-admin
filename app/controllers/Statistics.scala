@@ -4,11 +4,9 @@ import play.api.mvc._
 import db.DB
 import org.joda.time.DateTime
 import com.mongodb.casbah.query.Imports._
+import com.mongodb.casbah.commons.conversions.scala._
 
 object Statistics extends Controller {
-  import com.mongodb.casbah.commons.conversions.scala._
-  RegisterJodaTimeConversionHelpers()
-
 
   val EventLogsCollectionName = "eventlogs"
 

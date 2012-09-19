@@ -5,7 +5,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
-import java.util.Date
+import org.joda.time.DateTime
 import com.mongodb.DBObject
 import com.mongodb.casbah.query.Imports._
 import db.DB
@@ -50,8 +50,8 @@ object Announcements extends Controller {
             builder += "text" -> announcement.text
             builder += "url" -> announcement.url
             builder += "buttons" -> MongoDBObject("validate" -> announcement.validateButton, "cancel" -> announcement.cancelButton)
-            builder += "createdAt" -> new Date()
-            builder += "modifiedAt" -> new Date()
+            builder += "createdAt" -> DateTime.now()
+            builder += "modifiedAt" -> DateTime.now()
             c += builder.result
 
             Redirect(routes.Announcements.index).flashing("actionDone" -> "announcementAdded")
@@ -94,7 +94,7 @@ object Announcements extends Controller {
             val q = MongoDBObject("_id" -> new ObjectId(id))
             val o = $set("title" -> announcement.title, "text" -> announcement.text, "url" -> announcement.url,
               "buttons" -> MongoDBObject("validate" -> announcement.validateButton, "cancel" -> announcement.cancelButton),
-              "modifiedAt" -> new Date())
+              "modifiedAt" -> DateTime.now())
             c.update(q, o, false, false)
             Redirect(routes.Announcements.index).flashing("actionDone" -> "announcementUpdated")
         }

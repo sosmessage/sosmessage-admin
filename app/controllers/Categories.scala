@@ -5,10 +5,11 @@ import play.api.data.Forms._
 import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
-import java.util.Date
 import com.mongodb.DBObject
 import com.mongodb.casbah.query.Imports._
 import db.DB
+import com.mongodb.casbah.commons.conversions.scala._
+import org.joda.time.DateTime
 
 case class Category(name: String, color: String)
 
@@ -56,9 +57,9 @@ object Categories extends Controller {
             builder += "name" -> category.name
             val color = if (category.color.startsWith("#")) category.color else "#" + category.color
             builder += "color" -> color
-            builder += "createdAt" -> new Date()
-            builder += "modifiedAt" -> new Date()
-            builder += "lastAddedMessageAt" -> new Date()
+            builder += "createdAt" -> DateTime.now()
+            builder += "modifiedAt" -> DateTime.now()
+            builder += "lastAddedMessageAt" -> DateTime.now()
             c += builder.result
 
             Redirect(routes.Categories.index).flashing("actionDone" -> "categoryAdded")
@@ -98,7 +99,7 @@ object Categories extends Controller {
           c =>
             val q = MongoDBObject("_id" -> new ObjectId(id))
             val color = if (category.color.startsWith("#")) category.color else "#" + category.color
-            val o = $set("name" -> category.name, "color" -> color, "modifiedAt" -> new Date())
+            val o = $set("name" -> category.name, "color" -> color, "modifiedAt" -> DateTime.now())
             c.update(q, o, false, false)
             Redirect(routes.Categories.index).flashing("actionDone" -> "categoryUpdated")
         }

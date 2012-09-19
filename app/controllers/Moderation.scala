@@ -4,7 +4,7 @@ import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
 import com.mongodb.casbah.query.Imports._
-import java.util.Date
+import org.joda.time.DateTime
 import db.DB
 
 object Moderation extends Controller {
@@ -35,7 +35,7 @@ object Moderation extends Controller {
         DB.collection(CategoriesCollectionName) {
           categoriesCollection =>
             val q = MongoDBObject("_id" -> message.get("categoryId"))
-            val o = $set("lastAddedMessageAt" -> new Date())
+            val o = $set("lastAddedMessageAt" -> DateTime.now())
             categoriesCollection.update(q, o, false, false)
 
             Redirect(routes.Moderation.index(selectedTab)).flashing("actionDone" -> "messageApproved")
@@ -85,7 +85,7 @@ object Moderation extends Controller {
           categoriesCollection =>
             categoryIds.map { id =>
               val q = MongoDBObject("_id" -> id)
-              val o = $set("lastAddedMessageAt" -> new Date())
+              val o = $set("lastAddedMessageAt" -> DateTime.now())
               categoriesCollection.update(q, o, false, false)
             }
         }

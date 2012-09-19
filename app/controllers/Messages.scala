@@ -5,7 +5,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
-import java.util.Date
+import org.joda.time.DateTime
 import com.mongodb.DBObject
 import com.mongodb.casbah.query.Imports._
 import db.DB
@@ -114,12 +114,12 @@ object Messages extends Controller {
                   "messageWaiting"
                 case Some(s) =>
                   builder += "state" -> "approved"
-                  val o = $set("lastAddedMessageAt" -> new Date())
+                  val o = $set("lastAddedMessageAt" -> DateTime.now())
                   c.update(q, o, false, false)
                   "messageAdded"
               }
-              builder += "createdAt" -> new Date()
-              builder += "modifiedAt" -> new Date()
+              builder += "createdAt" -> DateTime.now()
+              builder += "modifiedAt" -> DateTime.now()
               builder += "random" -> scala.math.random
               c += builder.result
 
@@ -174,7 +174,7 @@ object Messages extends Controller {
               val newCategoryId = message.categoryId
               val q = MongoDBObject("_id" -> new ObjectId(messageId))
               val o = $set("categoryId" -> new ObjectId(newCategoryId), "text" -> message.text,
-                "contributorName" -> message.contributorName, "modifiedAt" -> new Date())
+                "contributorName" -> message.contributorName, "modifiedAt" -> DateTime.now())
               c.update(q, o, false, false)
               Redirect(routes.Messages.index(newCategoryId)).flashing("actionDone" -> "messageUpdated")
           }

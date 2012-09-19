@@ -86,8 +86,8 @@
               </td>
               <td>
                 @{
-                  val df = java.text.DateFormat.getDateInstance
-                  df.format(message.get("createdAt"))
+                  val df = org.joda.time.format.DateTimeFormat.mediumDate()
+                  df.print(message.get("createdAt").asInstanceOf[org.joda.time.DateTime])
                 }
               </td>
               <td class="actions-col moderation-actions-col">
