@@ -6,11 +6,13 @@ import org.streum.configrity.Configuration
 
 object DB {
 
+  val SosMessageMongoUriParam = "SOS_MESSAGE_MONGO_URI"
+
   val DefaultMongoUri = "mongodb://localhost/sosmessage"
 
   lazy val db = {
     val env = Configuration.environment
-    val uri = MongoURI(env("MONGOLAB_URI", DefaultMongoUri))
+    val uri = MongoURI(env(SosMessageMongoUriParam, DefaultMongoUri))
     val mongo = MongoConnection(uri)
     val db = mongo(uri.database.getOrElse("sosmessage"))
     uri.username.map(name =>
