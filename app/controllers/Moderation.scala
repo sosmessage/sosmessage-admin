@@ -7,12 +7,12 @@ import com.mongodb.casbah.query.Imports._
 import org.joda.time.DateTime
 import db.DB
 
-object Moderation extends Controller {
+object Moderation extends Controller with Secured {
 
   val CategoriesCollectionName = "categories"
   val MessagesCollectionName = "messages"
 
-  def index(state: String = "waiting") = Action { implicit request =>
+  def index(state: String = "waiting") = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       c =>
         val messageOrder = MongoDBObject("createdAt" -> -1)
@@ -24,7 +24,7 @@ object Moderation extends Controller {
     }
   }
 
-  def approve(messageId: String, selectedTab: String) = Action { implicit request =>
+  def approve(messageId: String, selectedTab: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       messagesCollection =>
         val oid = new ObjectId(messageId)
@@ -43,7 +43,7 @@ object Moderation extends Controller {
     }
   }
 
-  def reject(messageId: String, selectedTab: String) = Action { implicit request =>
+  def reject(messageId: String, selectedTab: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       c =>
         val oid = new ObjectId(messageId)
@@ -54,7 +54,7 @@ object Moderation extends Controller {
     }
   }
 
-  def delete(messageId: String, selectedTab: String) = Action { implicit request =>
+  def delete(messageId: String, selectedTab: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       c =>
         val oid = new ObjectId(messageId)
@@ -64,7 +64,7 @@ object Moderation extends Controller {
     }
   }
 
-  def deleteAll(state: String) = Action { implicit request =>
+  def deleteAll(state: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       c =>
         val o = MongoDBObject("state" -> state)
@@ -73,7 +73,7 @@ object Moderation extends Controller {
     }
   }
 
-  def approveAll(state: String) = Action { implicit request =>
+  def approveAll(state: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       messagesCollection =>
         val keys = MongoDBObject("categoryId" -> 1)
@@ -94,7 +94,7 @@ object Moderation extends Controller {
         Redirect(routes.Moderation.index("waiting")).flashing("actionDone" -> (state + "MessagesApproved"))
     }
   }
-  def rejectAll(state: String) = Action { implicit request =>
+  def rejectAll(state: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(MessagesCollectionName) {
       c =>
         c.update(MongoDBObject("state" -> state), $set("state" -> "rejected"), false, true)

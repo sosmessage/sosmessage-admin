@@ -1,0 +1,51 @@
+@(form: Form[(String,String)])(implicit flash: Flash)
+
+<html>
+  <head>
+    <meta http-equiv="Content-type" value="text/html; charset=utf-8">
+    <title>sosmessage</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+  </head>
+  <body>
+
+    <div class="wrapper">
+      <div class="container">
+        <h1>sosmessage</h1>
+        <div class="well login">
+          <div class="row">
+            <h1>Login</h1>
+
+            @helper.form(routes.Application.authenticate) {
+
+            @form.globalError.map { error =>
+              <div class="alert-message error">
+                @error.message
+              </div>
+            }
+
+            @flash.get("success").map { message =>
+              <div class="alert-message success">
+                @message
+              </div>
+            }
+
+            <p>
+              <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value">
+            </p>
+            <p>
+              <input type="password" name="password" id="password" placeholder="Password">
+            </p>
+            <p>
+              <button type="submit" class="btn primary">Login</button>
+            </p>}
+          </div>
+        </div>
+      </div> <!-- /container -->
+    </div>
+  </body>
+</html>
+
+
+

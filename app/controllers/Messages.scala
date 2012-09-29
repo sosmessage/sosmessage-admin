@@ -13,7 +13,7 @@ import db.DB
 case class Message(categoryId: String, text: String, contributorName: String,
   approved: Option[String])
 
-object Messages extends Controller {
+object Messages extends Controller with Secured {
 
   val CategoriesCollectionName = "categories"
   val MessagesCollectionName = "messages"
@@ -27,7 +27,7 @@ object Messages extends Controller {
     )(Message.apply)(Message.unapply)
   )
 
-  def indexNoCategory = Action {
+  def indexNoCategory = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(CategoriesCollectionName) {
         c =>
@@ -40,7 +40,7 @@ object Messages extends Controller {
       }
   }
 
-  def index(categoryId: String) = Action {
+  def index(categoryId: String) = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
@@ -91,7 +91,7 @@ object Messages extends Controller {
     message
   }
 
-  def save(selectedCategoryId: String) = Action {
+  def save(selectedCategoryId: String) = IsAuthenticated { _ =>
     implicit request =>
       messageForm.bindFromRequest().fold(
         formWithErrors => {
@@ -129,7 +129,7 @@ object Messages extends Controller {
       )
   }
 
-  def delete(selectedCategoryId: String, messageId: String) = Action {
+  def delete(selectedCategoryId: String, messageId: String) = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(MessagesCollectionName) {
         c =>
@@ -140,7 +140,7 @@ object Messages extends Controller {
       }
   }
 
-  def edit(categoryId: String, messageId: String) = Action {
+  def edit(categoryId: String, messageId: String) = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
@@ -162,7 +162,7 @@ object Messages extends Controller {
       }
   }
 
-  def update(categoryId: String, messageId: String) = Action {
+  def update(categoryId: String, messageId: String) = IsAuthenticated { _ =>
     implicit request =>
       messageForm.bindFromRequest.fold(
         formWithErrors => {

@@ -13,7 +13,7 @@ import org.joda.time.DateTime
 
 case class Category(name: String, color: String)
 
-object Categories extends Controller {
+object Categories extends Controller with Secured {
 
   val CategoriesCollectionName = "categories"
   val MessagesCollectionName = "messages"
@@ -25,7 +25,7 @@ object Categories extends Controller {
     )(Category.apply)(Category.unapply)
   )
 
-  def index = Action { implicit request =>
+  def index = IsAuthenticated { _ => implicit request =>
     DB.collection(CategoriesCollectionName) {
       categoriesCollection =>
         val categoryOrder = MongoDBObject("name" -> 1)
@@ -45,7 +45,7 @@ object Categories extends Controller {
     }
   }
 
-  def save = Action { implicit request =>
+  def save = IsAuthenticated { _ => implicit request =>
     categoryForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.Categories.index)
@@ -68,7 +68,7 @@ object Categories extends Controller {
     )
   }
 
-  def delete(id: String) = Action { implicit request =>
+  def delete(id: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(CategoriesCollectionName) {
       c =>
         val oid = new ObjectId(id)
@@ -78,7 +78,7 @@ object Categories extends Controller {
     }
   }
 
-  def edit(id: String) = Action { implicit request =>
+  def edit(id: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(CategoriesCollectionName) {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(id))
@@ -89,7 +89,7 @@ object Categories extends Controller {
     }
   }
 
-  def update(id: String) = Action { implicit request =>
+  def update(id: String) = IsAuthenticated { _ => implicit request =>
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Categories.edit(id))

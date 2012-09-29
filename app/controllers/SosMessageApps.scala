@@ -13,7 +13,7 @@ case class SosMessageApp(name: String, lang: String, title: String)
 case class NewAnnouncement(id: String)
 case class NewCategory(id: String)
 
-object SosMessageApps extends Controller {
+object SosMessageApps extends Controller with Secured {
 
   val AnnouncementsCollectionName = "announcements"
   val CategoriesCollectionName = "categories"
@@ -43,7 +43,7 @@ object SosMessageApps extends Controller {
     )(NewAnnouncement.apply)(NewAnnouncement.unapply)
   )
 
-  def index = Action { implicit request =>
+  def index = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       c =>
         val apps = c.find().foldLeft(List[DBObject]())((l, a) =>
@@ -53,7 +53,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def save = Action { implicit request =>
+  def save = IsAuthenticated { _ => implicit request =>
     appForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.index)
@@ -79,7 +79,7 @@ object SosMessageApps extends Controller {
     )
   }
 
-  def delete(id: String) = Action { implicit request =>
+  def delete(id: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(id))).map { app =>
@@ -96,7 +96,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def categories(appId: String) = Action { implicit request =>
+  def categories(appId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -127,7 +127,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def addCategory(appId: String) = Action { implicit request =>
+  def addCategory(appId: String) = IsAuthenticated { _ => implicit request =>
     addCategoryForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.categories(appId))
@@ -154,7 +154,7 @@ object SosMessageApps extends Controller {
     )
   }
 
-  def removeCategory(appId: String, categoryId: String) = Action { implicit request =>
+  def removeCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(appId))).map { app =>
@@ -171,7 +171,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def publishCategory(appId: String, categoryId: String) = Action { implicit request =>
+  def publishCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -188,7 +188,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def unpublishCategory(appId: String, categoryId: String) = Action { implicit request =>
+  def unpublishCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -205,7 +205,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def moveCategoryUp(appId: String, categoryId: String) = Action { implicit request =>
+  def moveCategoryUp(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -238,7 +238,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def moveCategoryDown(appId: String, categoryId: String) = Action { implicit request =>
+  def moveCategoryDown(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -271,7 +271,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def announcements(appId: String) = Action { implicit request =>
+  def announcements(appId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -295,7 +295,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def addAnnouncement(appId: String) = Action { implicit request =>
+  def addAnnouncement(appId: String) = IsAuthenticated { _ => implicit request =>
     addAnnouncementForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.announcements(appId))
@@ -319,7 +319,7 @@ object SosMessageApps extends Controller {
     )
   }
 
-  def removeAnnouncement(appId: String, announcementId: String) = Action { implicit request =>
+  def removeAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(appId))).map { app =>
@@ -336,7 +336,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def publishAnnouncement(appId: String, announcementId: String) = Action { implicit request =>
+  def publishAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -353,7 +353,7 @@ object SosMessageApps extends Controller {
     }
   }
 
-  def unpublishAnnouncement(appId: String, announcementId: String) = Action { implicit request =>
+  def unpublishAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))

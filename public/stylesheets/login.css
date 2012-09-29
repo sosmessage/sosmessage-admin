@@ -1,0 +1,14 @@
+.well.login {
+  width: 620px;
+  text-align: center;
+  margin: auto;
+}
+
+.well.login .row {
+  margin: 0px;
+}
+
+.well.login .action {
+  width: 300px;
+  text-align: left;
+}

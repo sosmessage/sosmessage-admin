@@ -12,7 +12,7 @@ import db.DB
 
 case class Announcement(title: String, text: String, url: String, validateButton: String, cancelButton: String)
 
-object Announcements extends Controller {
+object Announcements extends Controller with Secured {
 
   val AnnouncementsCollectionName = "announcements"
 
@@ -26,7 +26,7 @@ object Announcements extends Controller {
     )(Announcement.apply)(Announcement.unapply)
   )
 
-  def index = Action { implicit request =>
+  def index = IsAuthenticated { _ => implicit request =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val announcementOrder = MongoDBObject("title" -> 1)
@@ -37,7 +37,7 @@ object Announcements extends Controller {
     }
   }
 
-  def save = Action { implicit request =>
+  def save = IsAuthenticated { _ => implicit request =>
     announcementForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.Announcements.index)
@@ -60,7 +60,7 @@ object Announcements extends Controller {
     )
   }
 
-  def delete(id: String) = Action { implicit request =>
+  def delete(id: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val oid = new ObjectId(id)
@@ -70,7 +70,7 @@ object Announcements extends Controller {
     }
   }
 
-  def edit(id: String) = Action { implicit request =>
+  def edit(id: String) = IsAuthenticated { _ => implicit request =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(id))
@@ -83,7 +83,7 @@ object Announcements extends Controller {
     }
   }
 
-  def update(id: String) = Action { implicit request =>
+  def update(id: String) = IsAuthenticated { _ => implicit request =>
     announcementForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Announcements.edit(id))

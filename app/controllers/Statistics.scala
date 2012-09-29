@@ -6,16 +6,16 @@ import org.joda.time.DateTime
 import com.mongodb.casbah.query.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
 
-object Statistics extends Controller {
+object Statistics extends Controller with Secured {
 
   val EventLogsCollectionName = "eventlogs"
 
-  def index = Action {
+  def index = IsAuthenticated { _ =>
     implicit request =>
       Ok(views.html.stats.index())
   }
 
-  def requestsStats = Action {
+  def requestsStats = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(EventLogsCollectionName) {
         c =>
@@ -37,7 +37,7 @@ object Statistics extends Controller {
       }
   }
 
-  def usersStats = Action {
+  def usersStats = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(EventLogsCollectionName) {
         c =>
@@ -46,7 +46,7 @@ object Statistics extends Controller {
       }
   }
 
-  def appsStats = Action {
+  def appsStats = IsAuthenticated { _ =>
     implicit request =>
       DB.collection(EventLogsCollectionName) {
         c =>
