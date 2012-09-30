@@ -9,6 +9,7 @@ import com.mongodb.casbah.commons.conversions.scala._
 object Statistics extends Controller with Secured {
 
   val EventLogsCollectionName = "eventlogs"
+  val CategoriesCollectionName = "categories"
 
   def index = IsAuthenticated { _ =>
     implicit request =>
@@ -56,6 +57,84 @@ object Statistics extends Controller with Secured {
             MongoDBObject( "csum" -> 0 ), reduce).toSeq
             .sortBy(_.get("csum").asInstanceOf[Double]).reverse
           Ok(views.html.stats.apps(totalCount, appsCount))
+      }
+  }
+
+  def randomMessagesStats = IsAuthenticated { _ =>
+    implicit request =>
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          DB.collection(EventLogsCollectionName) {
+            c =>
+              val totalCount = c.count(MongoDBObject("action" -> "getRandomMessage"))
+              val reduce = """function(obj, prev) { prev.csum += 1; }"""
+              val messagesPerCategory = c.group(MongoDBObject("targetObject" -> true),
+                MongoDBObject("action" -> "getRandomMessage"),
+                MongoDBObject( "csum" -> 0 ), reduce).toSeq
+                .sortBy(_.get("csum").asInstanceOf[Double]).reverse.map(o => {
+                    val q = MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString))
+                    categoriesCollection.findOne(q) map {
+                      category =>
+                        val builder = MongoDBObject.newBuilder
+                        builder += ("name" -> category.get("name").toString)
+                        o.putAll(builder.result)
+                    }
+                    o
+                  })
+                Ok(views.html.stats.randomMessages(totalCount, messagesPerCategory))
+          }
+      }
+  }
+
+  def bestMessagesStats = IsAuthenticated { _ =>
+    implicit request =>
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          DB.collection(EventLogsCollectionName) {
+            c =>
+              val totalCount = c.count(MongoDBObject("action" -> "getBestMessages"))
+              val reduce = """function(obj, prev) { prev.csum += 1; }"""
+              val bestMessagesPerCategory = c.group(MongoDBObject("targetObject" -> true),
+                MongoDBObject("action" -> "getBestMessages"),
+                MongoDBObject( "csum" -> 0 ), reduce).toSeq
+                .sortBy(_.get("csum").asInstanceOf[Double]).reverse.map(o => {
+                    val q = MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString))
+                    categoriesCollection.findOne(q) map {
+                      category =>
+                        val builder = MongoDBObject.newBuilder
+                        builder += ("name" -> category.get("name").toString)
+                        o.putAll(builder.result)
+                    }
+                    o
+                  })
+                Ok(views.html.stats.randomMessages(totalCount, bestMessagesPerCategory))
+          }
+      }
+  }
+
+  def worstMessagesStats = IsAuthenticated { _ =>
+    implicit request =>
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          DB.collection(EventLogsCollectionName) {
+            c =>
+              val totalCount = c.count(MongoDBObject("action" -> "getWorstMessages"))
+              val reduce = """function(obj, prev) { prev.csum += 1; }"""
+              val worstMessagesPerCategory = c.group(MongoDBObject("targetObject" -> true),
+                MongoDBObject("action" -> "getWorstMessages"),
+                MongoDBObject( "csum" -> 0 ), reduce).toSeq
+                .sortBy(_.get("csum").asInstanceOf[Double]).reverse.map(o => {
+                    val q = MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString))
+                    categoriesCollection.findOne(q) map {
+                      category =>
+                        val builder = MongoDBObject.newBuilder
+                        builder += ("name" -> category.get("name").toString)
+                        o.putAll(builder.result)
+                    }
+                    o
+                  })
+                Ok(views.html.stats.randomMessages(totalCount, worstMessagesPerCategory))
+          }
       }
   }
 

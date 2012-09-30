@@ -72,7 +72,8 @@ object Application extends Controller with Secured {
   def javascriptRoutes = Action { implicit request =>
     import routes.javascript._
     Ok(Routes.javascriptRouter("jsRoutes")
-      (Statistics.requestsStats, Statistics.usersStats, Statistics.appsStats)
+      (Statistics.requestsStats, Statistics.usersStats, Statistics.appsStats,
+        Statistics.randomMessagesStats, Statistics.bestMessagesStats, Statistics.worstMessagesStats)
     ).as("text/javascript")
   }
 
