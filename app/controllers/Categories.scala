@@ -33,7 +33,7 @@ object Categories extends Controller with Secured {
           a :: l
         ).reverse
 
-        DB.collection(CategoriesCollectionName) {
+        DB.collection(MessagesCollectionName) {
           messagesCollection =>
             val messagesCountByCategory = categories.foldLeft(Map[String, Long]())((m, o) => {
               val count = messagesCollection.count(MongoDBObject("categoryId" -> o.get("_id"), "state" -> "approved"))
