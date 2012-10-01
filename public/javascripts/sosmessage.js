@@ -73,7 +73,7 @@ $(document).ready(function() {
     if (ratingCount > 0) {
       $(this).raty({
         number: 4,
-        path: "/admin/assets/images/",
+        path: "/assets/images/",
         half: true,
         readOnly:  true,
         start: $(this).attr("data-rating-start"),
@@ -82,7 +82,7 @@ $(document).ready(function() {
     } else {
       $(this).raty({
         number: 4,
-        path: "/admin/assets/images/",
+        path: "/assets/images/",
         readOnly:  true,
         width: "100%"
       });
