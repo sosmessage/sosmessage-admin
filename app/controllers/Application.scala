@@ -73,7 +73,7 @@ object Application extends Controller with Secured {
     import routes.javascript._
     Ok(Routes.javascriptRouter("jsRoutes")
       (Statistics.requestsStats, Statistics.usersStats, Statistics.appsStats,
-        Statistics.randomMessagesStats, Statistics.bestMessagesStats, Statistics.worstMessagesStats)
+        Statistics.randomMessagesStats, Statistics.bestMessagesStats, Statistics.worstMessagesStats, Statistics.contributedMessagesStats)
     ).as("text/javascript")
   }
 

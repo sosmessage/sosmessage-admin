@@ -81,7 +81,7 @@ object Statistics extends Controller with Secured {
                     }
                     o
                   })
-                Ok(views.html.stats.randomMessages(totalCount, messagesPerCategory))
+                Ok(views.html.stats.messages(totalCount, messagesPerCategory))
           }
       }
   }
@@ -107,7 +107,7 @@ object Statistics extends Controller with Secured {
                     }
                     o
                   })
-                Ok(views.html.stats.randomMessages(totalCount, bestMessagesPerCategory))
+                Ok(views.html.stats.messages(totalCount, bestMessagesPerCategory))
           }
       }
   }
@@ -133,7 +133,33 @@ object Statistics extends Controller with Secured {
                     }
                     o
                   })
-                Ok(views.html.stats.randomMessages(totalCount, worstMessagesPerCategory))
+                Ok(views.html.stats.messages(totalCount, worstMessagesPerCategory))
+          }
+      }
+  }
+
+  def contributedMessagesStats = IsAuthenticated { _ =>
+    implicit request =>
+      DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          DB.collection(EventLogsCollectionName) {
+            c =>
+              val totalCount = c.count(MongoDBObject("action" -> "postMessage"))
+              val reduce = """function(obj, prev) { prev.csum += 1; }"""
+              val contributedMessagesPerCategory = c.group(MongoDBObject("targetObject" -> true),
+                MongoDBObject("action" -> "postMessage"),
+                MongoDBObject( "csum" -> 0 ), reduce).toSeq
+                .sortBy(_.get("csum").asInstanceOf[Double]).reverse.map(o => {
+                    val q = MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString))
+                    categoriesCollection.findOne(q) map {
+                      category =>
+                        val builder = MongoDBObject.newBuilder
+                        builder += ("name" -> category.get("name").toString)
+                        o.putAll(builder.result)
+                    }
+                    o
+                  })
+                Ok(views.html.stats.messages(totalCount, contributedMessagesPerCategory))
           }
       }
   }

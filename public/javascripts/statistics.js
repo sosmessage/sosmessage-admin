@@ -71,12 +71,25 @@ $(document).ready(function() {
     })
   }
 
+  function loadContributedMessages() {
+    var ele = $("#stats-contributed-messages")
+    var loading = ele.find(".js-loading")
+    loading.show()
+    jsRoutes.controllers.Statistics.contributedMessagesStats().ajax({
+        success : function(data) {
+          ele.find(".js-stats-content").html(data)
+          loading.hide()
+        }
+    })
+  }
+
   setInterval(loadRequests, 5000)
   setInterval(loadUsers, 30000)
   setInterval(loadApps, 60000)
   setInterval(loadRandomMessages, 10000)
   setInterval(loadBestMessages, 10000)
   setInterval(loadWorstMessages, 10000)
+  setInterval(loadContributedMessages, 30000)
 
   loadRequests()
   loadUsers()
@@ -84,5 +97,6 @@ $(document).ready(function() {
   loadRandomMessages()
   loadBestMessages()
   loadWorstMessages()
+  loadContributedMessages()
 
 })
