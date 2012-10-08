@@ -136,10 +136,12 @@ object Statistics extends SosMessageController {
         categoriesCollection =>
           DB.collection(EventLogsCollectionName) {
             c =>
-              val totalCount = c.count(MongoDBObject("action" -> "postMessage"))
+              val q = MongoDBObject("action" -> "postMessage",
+                "uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""))
+              val totalCount = c.count(q)
               val reduce = """function(obj, prev) { prev.csum += 1; }"""
               val contributedMessagesPerCategory = c.group(MongoDBObject("targetObject" -> true),
-                MongoDBObject("action" -> "postMessage"),
+                q,
                 MongoDBObject( "csum" -> 0 ), reduce).toSeq
                 .sortBy(_.get("csum").asInstanceOf[Double]).reverse.map(o => {
                     val q = MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString))
