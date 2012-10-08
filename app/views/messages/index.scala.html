@@ -1,11 +1,6 @@
-@(
-  categories: List[com.mongodb.DBObject],
-  selectedCategoryId: String,
-  messages: List[com.mongodb.DBObject],
-  newMessageForm: play.api.data.Form[controllers.Message]
-)(implicit flash: play.api.mvc.Flash)
+@(categories: List[com.mongodb.DBObject], selectedCategoryId: String, messages: List[com.mongodb.DBObject], newMessageForm:play.api.data.Form[controllers.Message])(implicit ctx: Context)
 
-@main(selectedTab = "messages", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "messages") {
 
   <section id="messages">
 

@@ -1,11 +1,8 @@
-@(
-  announcementId: String,
-  announcementForm: play.api.data.Form[controllers.Announcement]
-)(implicit flash: play.api.mvc.Flash)
+@(announcementId: String, announcementForm: play.api.data.Form[controllers.Announcement])(implicit ctx: Context)
 
 @import helper._
 
-@main(selectedTab = "announcements", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "announcements") {
 
   <section id="announcement">
 

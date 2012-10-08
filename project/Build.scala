@@ -26,6 +26,9 @@ object ApplicationBuild extends Build {
           "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
           Resolver.url("Typesafe ivy-snapshots", url("http://repo.typesafe.com/typesafe/ivy-snapshots"))(Resolver.ivyStylePatterns),
           "Typesafe snapshots" at "http://repo.typesafe.com/typesafe/snapshots"
+        ),
+        templatesImport ++= Seq(
+          "http.Context"
         )
       )
 

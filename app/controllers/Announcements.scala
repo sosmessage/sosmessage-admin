@@ -12,7 +12,7 @@ import db.DB
 
 case class Announcement(title: String, text: String, url: String, validateButton: String, cancelButton: String)
 
-object Announcements extends Controller with Secured {
+object Announcements extends SosMessageController {
 
   val AnnouncementsCollectionName = "announcements"
 
@@ -26,7 +26,7 @@ object Announcements extends Controller with Secured {
     )(Announcement.apply)(Announcement.unapply)
   )
 
-  def index = IsAuthenticated { _ => implicit request =>
+  def index = Auth { implicit ctx => _ =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val announcementOrder = MongoDBObject("title" -> 1)
@@ -37,8 +37,9 @@ object Announcements extends Controller with Secured {
     }
   }
 
-  def save = IsAuthenticated { _ => implicit request =>
-    announcementForm.bindFromRequest().fold(
+  def save = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
+    announcementForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Announcements.index)
       },
@@ -60,7 +61,7 @@ object Announcements extends Controller with Secured {
     )
   }
 
-  def delete(id: String) = IsAuthenticated { _ => implicit request =>
+  def delete(id: String) = Auth {implicit ctx => _ =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val oid = new ObjectId(id)
@@ -70,7 +71,7 @@ object Announcements extends Controller with Secured {
     }
   }
 
-  def edit(id: String) = IsAuthenticated { _ => implicit request =>
+  def edit(id: String) = Auth { implicit ctx => _ =>
     DB.collection(AnnouncementsCollectionName) {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(id))
@@ -83,7 +84,8 @@ object Announcements extends Controller with Secured {
     }
   }
 
-  def update(id: String) = IsAuthenticated { _ => implicit request =>
+  def update(id: String) = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     announcementForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Announcements.edit(id))

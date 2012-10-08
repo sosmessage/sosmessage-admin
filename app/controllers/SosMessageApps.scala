@@ -13,7 +13,7 @@ case class SosMessageApp(name: String, lang: String, title: String)
 case class NewAnnouncement(id: String)
 case class NewCategory(id: String)
 
-object SosMessageApps extends Controller with Secured {
+object SosMessageApps extends SosMessageController {
 
   val AnnouncementsCollectionName = "announcements"
   val CategoriesCollectionName = "categories"
@@ -43,7 +43,7 @@ object SosMessageApps extends Controller with Secured {
     )(NewAnnouncement.apply)(NewAnnouncement.unapply)
   )
 
-  def index = IsAuthenticated { _ => implicit request =>
+  def index = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       c =>
         val apps = c.find().foldLeft(List[DBObject]())((l, a) =>
@@ -53,7 +53,8 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def save = IsAuthenticated { _ => implicit request =>
+  def save = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     appForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.index)
@@ -79,7 +80,7 @@ object SosMessageApps extends Controller with Secured {
     )
   }
 
-  def delete(id: String) = IsAuthenticated { _ => implicit request =>
+  def delete(id: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(id))).map { app =>
@@ -96,7 +97,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def categories(appId: String) = IsAuthenticated { _ => implicit request =>
+  def categories(appId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -127,7 +128,8 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def addCategory(appId: String) = IsAuthenticated { _ => implicit request =>
+  def addCategory(appId: String) = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     addCategoryForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.categories(appId))
@@ -154,7 +156,7 @@ object SosMessageApps extends Controller with Secured {
     )
   }
 
-  def removeCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
+  def removeCategory(appId: String, categoryId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(appId))).map { app =>
@@ -171,7 +173,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def publishCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
+  def publishCategory(appId: String, categoryId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -188,7 +190,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def unpublishCategory(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
+  def unpublishCategory(appId: String, categoryId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -205,7 +207,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def moveCategoryUp(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
+  def moveCategoryUp(appId: String, categoryId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -238,7 +240,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def moveCategoryDown(appId: String, categoryId: String) = IsAuthenticated { _ => implicit request =>
+  def moveCategoryDown(appId: String, categoryId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -271,7 +273,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def announcements(appId: String) = IsAuthenticated { _ => implicit request =>
+  def announcements(appId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -295,7 +297,8 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def addAnnouncement(appId: String) = IsAuthenticated { _ => implicit request =>
+  def addAnnouncement(appId: String) = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     addAnnouncementForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.SosMessageApps.announcements(appId))
@@ -319,7 +322,7 @@ object SosMessageApps extends Controller with Secured {
     )
   }
 
-  def removeAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
+  def removeAnnouncement(appId: String, announcementId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         appsCollection.findOne(MongoDBObject("_id" -> new ObjectId(appId))).map { app =>
@@ -336,7 +339,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def publishAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
+  def publishAnnouncement(appId: String, announcementId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))
@@ -353,7 +356,7 @@ object SosMessageApps extends Controller with Secured {
     }
   }
 
-  def unpublishAnnouncement(appId: String, announcementId: String) = IsAuthenticated { _ => implicit request =>
+  def unpublishAnnouncement(appId: String, announcementId: String) = Auth { implicit ctx => _ =>
     DB.collection(AppsCollectionName) {
       appsCollection =>
         val q = MongoDBObject("_id" -> new ObjectId(appId))

@@ -1,9 +1,6 @@
-@(
-  selectedTab: String,
-  messages: List[com.mongodb.DBObject]
-)(implicit flash: play.api.mvc.Flash)
+@(selectedTab: String, messages: List[com.mongodb.DBObject])(implicit ctx: Context)
 
-@main(selectedTab = "moderation", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "moderation") {
 
   <section id="moderation">
 

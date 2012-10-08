@@ -1,12 +1,6 @@
-@(
-  app: com.mongodb.DBObject,
-  categories: List[com.mongodb.DBObject],
-  messagesCountByCategory: Map[String, Long],
-  nonAppCategories: List[com.mongodb.DBObject],
-  addCategoryForm: play.api.data.Form[controllers.NewCategory]
-)(implicit flash: play.api.mvc.Flash)
+@(app: com.mongodb.DBObject, categories: List[com.mongodb.DBObject], messagesCountByCategory: Map[String, Long], nonAppCategories: List[com.mongodb.DBObject], addCategoryForm: play.api.data.Form[controllers.NewCategory])(implicit ctx: Context)
 
-@main(selectedTab = "apps", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "apps") {
 
   <section id="categories">
 

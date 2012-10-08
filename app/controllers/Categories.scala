@@ -13,7 +13,7 @@ import org.joda.time.DateTime
 
 case class Category(name: String, color: String)
 
-object Categories extends Controller with Secured {
+object Categories extends SosMessageController {
 
   val CategoriesCollectionName = "categories"
   val MessagesCollectionName = "messages"
@@ -25,7 +25,7 @@ object Categories extends Controller with Secured {
     )(Category.apply)(Category.unapply)
   )
 
-  def index = IsAuthenticated { _ => implicit request =>
+  def index = Auth { implicit ctx => _ =>
     DB.collection(CategoriesCollectionName) {
       categoriesCollection =>
         val categoryOrder = MongoDBObject("name" -> 1)
@@ -45,7 +45,8 @@ object Categories extends Controller with Secured {
     }
   }
 
-  def save = IsAuthenticated { _ => implicit request =>
+  def save = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     categoryForm.bindFromRequest().fold(
       formWithErrors => {
         Redirect(routes.Categories.index)
@@ -68,7 +69,7 @@ object Categories extends Controller with Secured {
     )
   }
 
-  def delete(id: String) = IsAuthenticated { _ => implicit request =>
+  def delete(id: String) = Auth { implicit ctx => _ =>
     DB.collection(CategoriesCollectionName) {
       c =>
         val oid = new ObjectId(id)
@@ -78,7 +79,7 @@ object Categories extends Controller with Secured {
     }
   }
 
-  def edit(id: String) = IsAuthenticated { _ => implicit request =>
+  def edit(id: String) = Auth { implicit ctx => _ =>
     DB.collection(CategoriesCollectionName) {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(id))
@@ -89,7 +90,8 @@ object Categories extends Controller with Secured {
     }
   }
 
-  def update(id: String) = IsAuthenticated { _ => implicit request =>
+  def update(id: String) = Auth { implicit ctx => _ =>
+    implicit val req = ctx.req
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Categories.edit(id))

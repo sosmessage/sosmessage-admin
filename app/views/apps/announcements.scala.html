@@ -1,11 +1,6 @@
-@(
-  app: com.mongodb.DBObject,
-  announcements: List[com.mongodb.DBObject],
-  nonAppAnnouncements: List[com.mongodb.DBObject],
-  addAnnouncementForm: play.api.data.Form[controllers.NewAnnouncement]
-)(implicit flash: play.api.mvc.Flash)
+@(app: com.mongodb.DBObject, announcements: List[com.mongodb.DBObject], nonAppAnnouncements: List[com.mongodb.DBObject], addAnnouncementForm: play.api.data.Form[controllers.NewAnnouncement])(implicit ctx: Context)
 
-@main(selectedTab = "apps", actionDone = flash.get("actionDone")) {
+@main(selectedTab = "apps") {
 
   <section id="announcements">
 

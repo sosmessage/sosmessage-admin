@@ -1,9 +1,6 @@
-@(
-  apps: List[com.mongodb.DBObject],
-  newAppForm: play.api.data.Form[controllers.SosMessageApp]
-)(implicit flash: play.api.mvc.Flash)
+@(apps: List[com.mongodb.DBObject], newAppForm: play.api.data.Form[controllers.SosMessageApp])(implicit ctx: Context)
 
-@main(selectedTab = "apps", actionDone = flash.get("actionDone"), actionError = flash.get("actionError")) {
+@main(selectedTab = "apps") {
 
   <section id="apps">
 

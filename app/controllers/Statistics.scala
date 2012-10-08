@@ -6,18 +6,16 @@ import org.joda.time.DateTime
 import com.mongodb.casbah.query.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
 
-object Statistics extends Controller with Secured {
+object Statistics extends SosMessageController {
 
   val EventLogsCollectionName = "eventlogs"
   val CategoriesCollectionName = "categories"
 
-  def index = IsAuthenticated { _ =>
-    implicit request =>
+  def index = Auth { implicit ctx => _ =>
       Ok(views.html.stats.index())
   }
 
-  def requestsStats = IsAuthenticated { _ =>
-    implicit request =>
+  def requestsStats = Auth { implicit ctx => _ =>
       DB.collection(EventLogsCollectionName) {
         c =>
           val now = DateTime.now()
@@ -38,8 +36,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def usersStats = IsAuthenticated { _ =>
-    implicit request =>
+  def usersStats = Auth { implicit ctx => _ =>
       DB.collection(EventLogsCollectionName) {
         c =>
           val uniqueUsers = c.distinct("uid").size
@@ -47,8 +44,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def appsStats = IsAuthenticated { _ =>
-    implicit request =>
+  def appsStats = Auth { implicit ctx => _ =>
       DB.collection(EventLogsCollectionName) {
         c =>
           val totalCount = c.count(MongoDBObject())
@@ -60,8 +56,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def randomMessagesStats = IsAuthenticated { _ =>
-    implicit request =>
+  def randomMessagesStats = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
           DB.collection(EventLogsCollectionName) {
@@ -86,8 +81,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def bestMessagesStats = IsAuthenticated { _ =>
-    implicit request =>
+  def bestMessagesStats = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
           DB.collection(EventLogsCollectionName) {
@@ -112,8 +106,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def worstMessagesStats = IsAuthenticated { _ =>
-    implicit request =>
+  def worstMessagesStats = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
           DB.collection(EventLogsCollectionName) {
@@ -138,8 +131,7 @@ object Statistics extends Controller with Secured {
       }
   }
 
-  def contributedMessagesStats = IsAuthenticated { _ =>
-    implicit request =>
+  def contributedMessagesStats = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
           DB.collection(EventLogsCollectionName) {

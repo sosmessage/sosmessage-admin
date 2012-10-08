@@ -9,12 +9,13 @@ import com.mongodb.casbah.query.Imports._
 import db.DB
 import com.mongodb.casbah.commons.conversions.scala._
 import java.security.MessageDigest
+import http._
 
-object Application extends Controller with Secured {
+object Application extends SosMessageController with Secured {
 
   RegisterJodaTimeConversionHelpers()
 
-  def index = IsAuthenticated { _ => implicit request =>
+  def index = Open { implicit ctx =>
     Ok(views.html.index())
   }
 
@@ -64,7 +65,7 @@ object Application extends Controller with Secured {
    * Logout and clean the session.
    */
   def logout = Action {
-    Redirect(routes.Application.login).withNewSession.flashing(
+    Redirect(routes.Application.index).withNewSession.flashing(
       "success" -> "You've been logged out"
     )
   }
@@ -75,30 +76,6 @@ object Application extends Controller with Secured {
       (Statistics.requestsStats, Statistics.usersStats, Statistics.appsStats,
         Statistics.randomMessagesStats, Statistics.bestMessagesStats, Statistics.worstMessagesStats, Statistics.contributedMessagesStats)
     ).as("text/javascript")
-  }
-
-}
-
-/**
- * Provide security features
- */
-trait Secured {
-
-  /**
-   * Retrieve the connected user email.
-   */
-  private def username(request: RequestHeader) = request.session.get("email")
-
-  /**
-   * Redirect to login if the user in not authorized.
-   */
-  private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Application.login)
-
-  /**
-   * Action for authenticated users.
-   */
-  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = Security.Authenticated(username, onUnauthorized) { user =>
-    Action(request => f(user)(request))
   }
 
 }
