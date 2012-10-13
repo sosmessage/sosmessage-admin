@@ -5,10 +5,14 @@
   <div>
 
     <table class="table table-condensed">
+      <tr>
+        <td>Total</td>
+        <td>@{totalCount}</td>
+      </tr>
       @appsCount.map { appCount =>
         <tr>
           <td>@appCount.get("appName")</td>
-          <td>@{"%2.2f".format(appCount.get("csum").asInstanceOf[Double] * 100 / totalCount)}%</td>
+          <td>@{totalCount} (@{"%2.2f".format(appCount.get("csum").asInstanceOf[Double] * 100 / totalCount)}%)</td>
         </tr>
       }
     </table>
