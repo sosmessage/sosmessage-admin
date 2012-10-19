@@ -96,32 +96,35 @@ object Messages extends SosMessageController {
         Redirect(routes.Messages.index(selectedCategoryId))
       },
       message => {
-        DB.collection(MessagesCollectionName) {
-          c =>
-            val oid = new ObjectId(message.categoryId)
-            val q = MongoDBObject("_id" -> oid)
-            val category = c.findOne(q).get
-            val builder = MongoDBObject.newBuilder
-            builder += "categoryId" -> category.get("_id")
-            builder += "category" -> category.get("name")
-            builder += "text" -> message.text
-            builder += "contributorName" -> message.contributorName
-            val actionDone = message.approved match {
-              case None =>
-                builder += "state" -> "waiting"
-                "messageWaiting"
-              case Some(s) =>
-                builder += "state" -> "approved"
-                val o = $set("lastAddedMessageAt" -> DateTime.now())
-                c.update(q, o, false, false)
-                "messageAdded"
-            }
-            builder += "createdAt" -> DateTime.now()
-            builder += "modifiedAt" -> DateTime.now()
-            builder += "random" -> scala.math.random
-            c += builder.result
+        DB.collection(CategoriesCollectionName) {
+        categoriesCollection =>
+          DB.collection(MessagesCollectionName) {
+            messagesCollection =>
+              val oid = new ObjectId(message.categoryId)
+              val q = MongoDBObject("_id" -> oid)
+              val category = categoriesCollection.findOne(q).get
+              val builder = MongoDBObject.newBuilder
+              builder += "categoryId" -> category.get("_id")
+              builder += "category" -> category.get("name")
+              builder += "text" -> message.text
+              builder += "contributorName" -> message.contributorName
+              val actionDone = message.approved match {
+                case None =>
+                  builder += "state" -> "waiting"
+                  "messageWaiting"
+                case Some(s) =>
+                  builder += "state" -> "approved"
+                  val o = $set("lastAddedMessageAt" -> DateTime.now())
+                  categoriesCollection.update(q, o, false, false)
+                  "messageAdded"
+              }
+              builder += "createdAt" -> DateTime.now()
+              builder += "modifiedAt" -> DateTime.now()
+              builder += "random" -> scala.math.random
+              messagesCollection += builder.result
 
-            Redirect(routes.Messages.index(category.get("_id").toString)).flashing("actionDone" -> actionDone)
+              Redirect(routes.Messages.index(category.get("_id").toString)).flashing("actionDone" -> actionDone)
+          }
         }
       }
     )
