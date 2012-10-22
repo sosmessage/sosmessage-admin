@@ -56,7 +56,8 @@ object Statistics extends SosMessageController {
           val totalCount = c.count(MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
             "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
           val reduce = """function(obj, prev) { prev.csum += 1; }"""
-          val appsCount = c.group(MongoDBObject("appName" -> true), MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+          val appsCount = c.group(MongoDBObject("appName" -> true),
+            MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
             "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")),
             MongoDBObject( "csum" -> 0 ), reduce).toSeq
             .sortBy(_.get("csum").asInstanceOf[Double]).reverse
