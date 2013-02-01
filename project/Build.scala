@@ -1,7 +1,7 @@
 import sbt._
 import sbt.Keys._
 
-import PlayProject._
+import play.Project._
 
 object ApplicationBuild extends Build {
 
@@ -9,8 +9,8 @@ object ApplicationBuild extends Build {
     val appVersion      = "2.1-SNAPSHOT"
 
     val appDependencies = Seq(
-      "org.mongodb" %% "casbah" % "2.4.1",
-      "org.streum" %% "configrity-core" % "0.10.2",
+      "org.mongodb" %% "casbah" % "2.5.0",
+      "org.streum" %% "configrity-core" % "1.0.0",
       "commons-lang" % "commons-lang" % "2.6"
     )
 
@@ -19,7 +19,7 @@ object ApplicationBuild extends Build {
         scalacOptions ++= Seq("-unchecked", "-deprecation")
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*)
+    val main = play.Project(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*)
       .settings(buildSettings: _*).settings(
         resolvers ++= Seq(
           Resolver.file("Local Repository", file("/Users/troger/code/Play20/repository/local"))(Resolver.ivyStylePatterns),

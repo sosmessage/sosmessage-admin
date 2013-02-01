@@ -8,4 +8,4 @@ Resolver.file("Local Repository", file("/Users/troger/code/Play20/repository/loc
   "Typesafe snapshots" at "http://repo.typesafe.com/typesafe/snapshots"
 )
 
-addSbtPlugin("play" % "sbt-plugin" % "2.1-09142012")
+addSbtPlugin("play" % "sbt-plugin" % "2.1-RC3")

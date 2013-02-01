@@ -3,9 +3,9 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import com.mongodb.casbah.query.Imports._
 import com.mongodb.DBObject
 import org.joda.time.DateTime
+import com.mongodb.casbah.query.Imports._
 import db.DB
 
 case class SosMessageApp(name: String, lang: String, title: String)
@@ -87,7 +87,7 @@ object SosMessageApps extends SosMessageController {
           DB.collection(CategoriesCollectionName) {
             categoriesCollection =>
               val key = "apps." + app.get("name")
-              val o = $unset(key)
+              val o = $unset(Seq(key))
               val q = MongoDBObject(key -> MongoDBObject("$exists" -> true))
               categoriesCollection.update(q, o, false, true)
           }
@@ -145,7 +145,7 @@ object SosMessageApps extends SosMessageController {
 
                   val q = MongoDBObject("_id" -> new ObjectId(newCategory.id))
                   val key = "apps." + app.get("name")
-                  val o = $set(key -> MongoDBObject("published" -> false, "order" -> appCategories.count), "modifiedAt" -> DateTime.now())
+                  val o = $set(Seq(key -> MongoDBObject("published" -> false, "order" -> appCategories.count), "modifiedAt" -> DateTime.now()))
                   categoriesCollection.update(q, o, false, false)
                   Redirect(routes.SosMessageApps.categories(appId)).flashing("actionDone" -> "categoryAdded")
               }
@@ -164,7 +164,7 @@ object SosMessageApps extends SosMessageController {
             categoriesCollection =>
               val q = MongoDBObject("_id" -> new ObjectId(categoryId))
               val key = "apps." + app.get("name")
-              val o = $unset(key)
+              val o = $unset(Seq(key))
               categoriesCollection.update(q, o, false, false)
               Redirect(routes.SosMessageApps.categories(appId)).flashing("actionDone" -> "categoryRemoved")
           }
@@ -181,7 +181,7 @@ object SosMessageApps extends SosMessageController {
           DB.collection(CategoriesCollectionName) {
             categoriesCollection =>
               val key = "apps." + app.get("name") + ".published"
-              val o = $set(key -> true, "modifiedAt" -> DateTime.now())
+              val o = $set(Seq(key -> true, "modifiedAt" -> DateTime.now()))
               val q = MongoDBObject("_id" -> new ObjectId(categoryId))
               categoriesCollection.update(q, o, false, false)
           }
@@ -198,7 +198,7 @@ object SosMessageApps extends SosMessageController {
           DB.collection(CategoriesCollectionName) {
             categoriesCollection =>
               val key = "apps." + app.get("name") + ".published"
-              val o = $set(key -> false, "modifiedAt" -> DateTime.now())
+              val o = $set(Seq(key -> false, "modifiedAt" -> DateTime.now()))
               val q = MongoDBObject("_id" -> new ObjectId(categoryId))
               categoriesCollection.update(q, o, false, false)
           }
@@ -225,12 +225,12 @@ object SosMessageApps extends SosMessageController {
                 if (index > 0) {
                   val key = "apps." + app.get("name").toString + ".order"
                   var q = MongoDBObject("_id" -> selectedCategory.get("_id"))
-                  var o = $inc(key -> 1)
+                  var o = $inc(key -> 1.0)
                   categoriesCollection.update(q, o, false, false)
 
                   var categoryBefore = appCategories(index - 1)
                   q = MongoDBObject("_id" -> categoryBefore.get("_id"))
-                  o = $inc(key -> -1)
+                  o = $inc(key -> -1.0)
                   categoriesCollection.update(q, o, false, false)
                 }
               }
@@ -258,12 +258,12 @@ object SosMessageApps extends SosMessageController {
                 if (index < appCategories.size - 1) {
                   val key = "apps." + app.get("name").toString + ".order"
                   var q = MongoDBObject("_id" -> selectedCategory.get("_id"))
-                  var o = $inc(key -> -1)
+                  var o = $inc(key -> -1.0)
                   categoriesCollection.update(q, o, false, false)
 
                   var categoryAfter = appCategories(index + 1)
                   q = MongoDBObject("_id" -> categoryAfter.get("_id"))
-                  o = $inc(key -> 1)
+                  o = $inc(key -> 1.0)
                   categoriesCollection.update(q, o, false, false)
                 }
               }
@@ -311,7 +311,7 @@ object SosMessageApps extends SosMessageController {
                 announcementsCollection =>
                   val q = MongoDBObject("_id" -> new ObjectId(newAnnouncement.id))
                   val key = "apps." + app.get("name")
-                  val o = $set(key -> MongoDBObject("published" -> false), "modifiedAt" -> DateTime.now())
+                  val o = $set(Seq(key -> MongoDBObject("published" -> false), "modifiedAt" -> DateTime.now()))
                   announcementsCollection.update(q, o, false, false)
                   Redirect(routes.SosMessageApps.announcements(appId)).flashing("actionDone" -> "announcementAdded")
               }
@@ -330,7 +330,7 @@ object SosMessageApps extends SosMessageController {
             announcementsCollection =>
               val q = MongoDBObject("_id" -> new ObjectId(announcementId))
               val key = "apps." + app.get("name")
-              val o = $unset(key)
+              val o = $unset(Seq(key))
               announcementsCollection.update(q, o, false, false)
               Redirect(routes.SosMessageApps.announcements(appId)).flashing("actionDone" -> "announcementRemoved")
           }
@@ -347,7 +347,7 @@ object SosMessageApps extends SosMessageController {
           DB.collection(AnnouncementsCollectionName) {
             announcementsCollection =>
               val key = "apps." + app.get("name") + ".published"
-              val o = $set(key -> true, "modifiedAt" -> DateTime.now())
+              val o = $set(Seq(key -> true, "modifiedAt" -> DateTime.now()))
               val q = MongoDBObject("_id" -> new ObjectId(announcementId))
               announcementsCollection.update(q, o, false, false)
           }
@@ -364,7 +364,7 @@ object SosMessageApps extends SosMessageController {
           DB.collection(AnnouncementsCollectionName) {
             announcementsCollection =>
               val key = "apps." + app.get("name") + ".published"
-              val o = $set(key -> false, "modifiedAt" -> DateTime.now())
+              val o = $set(Seq(key -> false, "modifiedAt" -> DateTime.now()))
               val q = MongoDBObject("_id" -> new ObjectId(announcementId))
               announcementsCollection.update(q, o, false, false)
           }

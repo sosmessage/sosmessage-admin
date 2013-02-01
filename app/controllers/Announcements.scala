@@ -3,11 +3,9 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import com.mongodb.DBObject
-import com.mongodb.casbah.query.Imports._
+import com.mongodb.casbah.Imports._
 import db.DB
 
 case class Announcement(title: String, text: String, url: String, validateButton: String, cancelButton: String)
@@ -94,9 +92,9 @@ object Announcements extends SosMessageController {
         DB.collection(AnnouncementsCollectionName) {
           c =>
             val q = MongoDBObject("_id" -> new ObjectId(id))
-            val o = $set("title" -> announcement.title, "text" -> announcement.text, "url" -> announcement.url,
+            val o = $set(Seq("title" -> announcement.title, "text" -> announcement.text, "url" -> announcement.url,
               "buttons" -> MongoDBObject("validate" -> announcement.validateButton, "cancel" -> announcement.cancelButton),
-              "modifiedAt" -> DateTime.now())
+              "modifiedAt" -> DateTime.now()))
             c.update(q, o, false, false)
             Redirect(routes.Announcements.index).flashing("actionDone" -> "announcementUpdated")
         }

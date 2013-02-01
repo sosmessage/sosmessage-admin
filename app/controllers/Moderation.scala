@@ -1,10 +1,9 @@
 package controllers
 
 import play.api.mvc._
-import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
-import com.mongodb.casbah.query.Imports._
 import org.joda.time.DateTime
+import com.mongodb.casbah.Imports._
 import db.DB
 
 object Moderation extends SosMessageController {
@@ -35,7 +34,7 @@ object Moderation extends SosMessageController {
         DB.collection(CategoriesCollectionName) {
           categoriesCollection =>
             val q = MongoDBObject("_id" -> message.get("categoryId"))
-            val o = $set("lastAddedMessageAt" -> DateTime.now())
+            val o = $set(Seq("lastAddedMessageAt" -> DateTime.now()))
             categoriesCollection.update(q, o, false, false)
 
             Redirect(routes.Moderation.index(selectedTab)).flashing("actionDone" -> "messageApproved")
@@ -85,19 +84,19 @@ object Moderation extends SosMessageController {
           categoriesCollection =>
             categoryIds.map { id =>
               val q = MongoDBObject("_id" -> id)
-              val o = $set("lastAddedMessageAt" -> DateTime.now())
+              val o = $set(Seq("lastAddedMessageAt" -> DateTime.now()))
               categoriesCollection.update(q, o, false, false)
             }
         }
 
-        messagesCollection.update(MongoDBObject("state" -> state), $set("state" -> "approved"), false, true)
+        messagesCollection.update(MongoDBObject("state" -> state), $set(Seq("state" -> "approved")), false, true)
         Redirect(routes.Moderation.index("waiting")).flashing("actionDone" -> (state + "MessagesApproved"))
     }
   }
   def rejectAll(state: String) = Auth { implicit ctx => _ =>
     DB.collection(MessagesCollectionName) {
       c =>
-        c.update(MongoDBObject("state" -> state), $set("state" -> "rejected"), false, true)
+        c.update(MongoDBObject("state" -> state), $set(Seq("state" -> "rejected")), false, true)
         Redirect(routes.Moderation.index("waiting")).flashing("actionDone" -> (state + "MessagesRejected"))
     }
   }

@@ -3,13 +3,12 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
 import com.mongodb.DBObject
-import com.mongodb.casbah.query.Imports._
-import db.DB
-import com.mongodb.casbah.commons.conversions.scala._
 import org.joda.time.DateTime
+import com.mongodb.casbah.Imports._
+import db.DB
+
 
 case class Category(name: String, color: String)
 
@@ -101,7 +100,7 @@ object Categories extends SosMessageController {
           c =>
             val q = MongoDBObject("_id" -> new ObjectId(id))
             val color = if (category.color.startsWith("#")) category.color else "#" + category.color
-            val o = $set("name" -> category.name, "color" -> color, "modifiedAt" -> DateTime.now())
+            val o = $set(Seq("name" -> category.name, "color" -> color, "modifiedAt" -> DateTime.now()))
             c.update(q, o, false, false)
             Redirect(routes.Categories.index).flashing("actionDone" -> "categoryUpdated")
         }

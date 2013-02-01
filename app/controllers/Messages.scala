@@ -3,11 +3,10 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import com.mongodb.casbah.commons.MongoDBObject
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import com.mongodb.DBObject
-import com.mongodb.casbah.query.Imports._
+import com.mongodb.casbah.Imports._
 import db.DB
 
 case class Message(categoryId: String, text: String, contributorName: String,
@@ -114,7 +113,7 @@ object Messages extends SosMessageController {
                   "messageWaiting"
                 case Some(s) =>
                   builder += "state" -> "approved"
-                  val o = $set("lastAddedMessageAt" -> DateTime.now())
+                  val o = $set(Seq("lastAddedMessageAt" -> DateTime.now()))
                   categoriesCollection.update(q, o, false, false)
                   "messageAdded"
               }
@@ -172,8 +171,8 @@ object Messages extends SosMessageController {
           c =>
             val newCategoryId = message.categoryId
             val q = MongoDBObject("_id" -> new ObjectId(messageId))
-            val o = $set("categoryId" -> new ObjectId(newCategoryId), "text" -> message.text,
-              "contributorName" -> message.contributorName, "modifiedAt" -> DateTime.now())
+            val o = $set(Seq("categoryId" -> new ObjectId(newCategoryId), "text" -> message.text,
+              "contributorName" -> message.contributorName, "modifiedAt" -> DateTime.now()))
             c.update(q, o, false, false)
             Redirect(routes.Messages.index(newCategoryId)).flashing("actionDone" -> "messageUpdated")
         }
