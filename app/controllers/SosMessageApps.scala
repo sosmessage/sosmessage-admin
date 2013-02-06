@@ -111,7 +111,9 @@ object SosMessageApps extends SosMessageController {
               ).reverse
 
               val nonAppCategoriesQuery = MongoDBObject("apps." + app.get("name").toString -> MongoDBObject("$exists" -> false))
-              val nonAppCategories = categoriesCollection.find(nonAppCategoriesQuery).foldLeft(List[DBObject]())((l, a) =>
+              val nonAppcategoriesOrder = MongoDBObject("name" -> 1)
+              val nonAppCategories = categoriesCollection.find(nonAppCategoriesQuery)
+                .sort(nonAppcategoriesOrder).foldLeft(List[DBObject]())((l, a) =>
                 a :: l
               ).reverse
 
@@ -145,7 +147,8 @@ object SosMessageApps extends SosMessageController {
 
                   val q = MongoDBObject("_id" -> new ObjectId(newCategory.id))
                   val key = "apps." + app.get("name")
-                  val o = $set(Seq(key -> MongoDBObject("published" -> false, "order" -> appCategories.count), "modifiedAt" -> DateTime.now()))
+                  val o = $set(Seq(key -> MongoDBObject("published" -> false,
+                    "order" -> appCategories.count), "modifiedAt" -> DateTime.now()))
                   categoriesCollection.update(q, o, false, false)
                   Redirect(routes.SosMessageApps.categories(appId)).flashing("actionDone" -> "categoryAdded")
               }
