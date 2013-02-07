@@ -45,7 +45,7 @@ POST      /categories/:categoryId                   controllers.Categories.updat
 
 # Messages
 GET       /messages                                             controllers.Messages.indexNoCategory
-GET       /categories/:categoryId/messages                      controllers.Messages.index(categoryId: String)
+GET       /categories/:categoryId/messages                      controllers.Messages.index(categoryId: String, sort: String ?= "all")
 POST      /categories/:categoryId/messages                      controllers.Messages.save(categoryId: String)
 POST      /categories/:categoryId/messages/:messageId/delete    controllers.Messages.delete(categoryId: String, messageId: String)
 GET       /categories/:categoryId/messages/:messageId           controllers.Messages.edit(categoryId: String, messageId: String)

@@ -38,7 +38,7 @@ object Messages extends SosMessageController {
       }
   }
 
-  def index(categoryId: String) = Auth { implicit ctx => _ =>
+  def index(categoryId: String, sort: String = "all") = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
           val categoryOrder = MongoDBObject("name" -> 1)
@@ -48,12 +48,29 @@ object Messages extends SosMessageController {
 
           DB.collection(MessagesCollectionName) {
             messagesCollection =>
-              val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-              val order = MongoDBObject("createdAt" -> -1)
-              val messages = messagesCollection.find(q).limit(0).sort(order).toSeq.map( message =>
-                computeRatingInformation(message).asDBObject
-              )
-              Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm))
+              sort match {
+                case "best" => {
+                  val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+                  val messages = messagesCollection.find(q).toSeq.map(message => computeRatingInformation(message).asDBObject)
+                   .sortBy(m => m.get("score").asInstanceOf[Double]).reverse.slice(0, 20)
+                  Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm, "best"))
+                }
+                case "worst" => {
+                  val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+                  val messages = messagesCollection.find(q).toSeq.map(message => computeRatingInformation(message).asDBObject)
+                   .sortBy(m => m.get("score").asInstanceOf[Double]).slice(0, 20)
+                  Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm, "worst"))
+                }
+                case _ => {
+                  val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+                  val order = MongoDBObject("createdAt" -> -1)
+                  val messages = messagesCollection.find(q).limit(0).sort(order).toSeq.map(message =>
+                    computeRatingInformation(message).asDBObject
+                  )
+                  Ok(views.html.messages.index(categories, categoryId, messages.toList, messageForm, "all"))
+                }
+              }
+
           }
       }
   }
@@ -69,10 +86,14 @@ object Messages extends SosMessageController {
       case Some(r) => {
         var count: Long = 0
         var total: Double = 0.0
+        var votePlus = 0
+        var voteMinus = 0
 
         val ratings = new MongoDBObject(r.asInstanceOf[DBObject])
         for ((k, v) <- ratings) {
           val value = v.asInstanceOf[Int]
+          val vote = if (value == 1.0) -1 else 1
+          if (vote == 1) votePlus += 1 else voteMinus += 1
           count += 1
           total += value
         }
@@ -81,6 +102,12 @@ object Messages extends SosMessageController {
         val avg = if (total == 0 || count == 0) 0.0 else total / count
         builder += ("ratingCount" -> count)
         builder += ("rating" -> avg)
+
+        val s = votePlus - voteMinus
+        val sign = if (s < 0) -1.0 else if (s > 0) 1.0 else 0
+        val score = sign * ((20 * 3) + (count * avg)) / (20 + count)
+        builder += ("score" -> score)
+
         message.putAll(builder.result())
         message.removeField("ratings")
       }

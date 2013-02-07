@@ -1,4 +1,8 @@
-@(categories: List[com.mongodb.DBObject], selectedCategoryId: String, messages: List[com.mongodb.DBObject], newMessageForm:play.api.data.Form[controllers.Message])(implicit ctx: Context)
+@(categories: List[com.mongodb.DBObject],
+  selectedCategoryId: String,
+  messages: List[com.mongodb.DBObject],
+  newMessageForm:play.api.data.Form[controllers.Message],
+  sort: String)(implicit ctx: Context)
 
 @main(selectedTab = "messages") {
 
@@ -17,7 +21,7 @@
             @categories.map { category =>
               <option value="@category.get("_id")"
                 @if(category.get("_id") == selectedCategoryId) {selected="selected"}
-                sosmessage-redirect-url="@routes.Messages.index(category.get("_id").toString)">
+                sosmessage-redirect-url="@routes.Messages.index(category.get("_id").toString, "all")">
                 @category.get("name")
               </option>
             }
@@ -36,6 +40,18 @@
     </p>
 
     <div style="clear:both;"></div>
+
+    <ul class="tabs">
+      <li @if(sort == "all") {class="active"}>
+        <a href="@routes.Messages.index(selectedCategoryId)">All</a>
+      </li>
+      <li @if(sort == "best") {class="active"}>
+        <a href="@routes.Messages.index(selectedCategoryId, "best")">Best</a>
+      </li>
+      <li @if(sort == "worst") {class="active"}>
+        <a href="@routes.Messages.index(selectedCategoryId, "worst")">Worst</a>
+      </li>
+    </ul>
 
     <div class="messages-container">
       <table class="zebra-striped">
