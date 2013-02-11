@@ -4,6 +4,8 @@
 
 GET       /javascriptRoutes     controllers.Application.javascriptRoutes
 
+GET       /ping                                      controllers.Application.ping
+
 # Home page
 GET       /                                          controllers.Application.index
 

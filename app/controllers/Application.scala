@@ -78,4 +78,8 @@ object Application extends SosMessageController with Secured {
     ).as("text/javascript")
   }
 
+  def ping = Open { implicit ctx =>
+    Ok("pong")
+  }
+
 }
