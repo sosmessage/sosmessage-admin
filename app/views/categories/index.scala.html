@@ -1,5 +1,7 @@
 @(categories: List[com.mongodb.DBObject], messagesCountByCategory: Map[String, Long], newCategoryForm: play.api.data.Form[controllers.Category])(implicit ctx: Context)
 
+@import helper._
+
 @main(selectedTab = "categories") {
 
   <section id="categories">
@@ -23,6 +25,7 @@
           <tr>
             <th>Name</th>
             <th>Color</th>
+            <th>Free</th>
             <th class="delete-message-col"></th>
           </tr>
         </thead>
@@ -35,6 +38,9 @@
               </td>
               <td>
                 <div class="color-div" style="background-color: #@category.get("color").toString.substring(3)"></div>
+              </td>
+              <td>
+                @(if (category.get("free").toString.startsWith("false")) "No" else "Yes")
               </td>
               <td class="actions-col">
                 <form action="@routes.Categories.delete(category.get("_id").toString)" method="POST"
@@ -68,7 +74,16 @@
                 <label for="@field.name">Color</label>
                 <div class="input">
                   <input class="xlarge color" id="@field.name" name="@field.name" type="text" value="@field.value" />
-                </div>
+
+              }
+              @newCategoryForm.forField("free") { field =>
+                <label for="@field.name">Free</label>
+                <label class="radio inline">
+                  <input type="radio" id="free_true" name="@field.name" value="true" @if(field.value.getOrElse("false").startsWith("true")) {checked="checked"}> True
+                </label>
+                <label class="radio inline">
+                  <input type="radio" id="free_false" name="@field.name" value="false" @if(field.value.getOrElse("false").startsWith("false")) {checked="checked"}> False
+                </label>
               }
             </div>
           </fieldset>

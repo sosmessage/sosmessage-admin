@@ -10,7 +10,7 @@ import com.mongodb.casbah.Imports._
 import db.DB
 
 
-case class Category(name: String, color: String)
+case class Category(name: String, color: String, free: Boolean)
 
 object Categories extends SosMessageController {
 
@@ -20,7 +20,8 @@ object Categories extends SosMessageController {
   val categoryForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "color" -> text(minLength = 9)
+      "color" -> text(minLength = 9),
+      "free" -> default(boolean, false)
     )(Category.apply)(Category.unapply)
   )
 
@@ -38,7 +39,6 @@ object Categories extends SosMessageController {
               val count = messagesCollection.count(MongoDBObject("categoryId" -> o.get("_id"), "state" -> "approved"))
               m + (o.get("_id").toString -> count)
             })
-
             Ok(views.html.categories.index(categories, messagesCountByCategory, categoryForm))
         }
     }
@@ -57,6 +57,7 @@ object Categories extends SosMessageController {
             builder += "name" -> category.name
             val color = if (category.color.startsWith("#")) category.color else "#" + category.color
             builder += "color" -> color
+            builder += "free" -> category.free
             builder += "createdAt" -> DateTime.now()
             builder += "modifiedAt" -> DateTime.now()
             builder += "lastAddedMessageAt" -> DateTime.now()
@@ -83,7 +84,8 @@ object Categories extends SosMessageController {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(id))
         c.findOne(q).map { category =>
-          val c = Category(category.get("name").toString, category.get("color").toString)
+          val c = Category(category.get("name").toString, category.get("color").toString,
+            category.get("free").asInstanceOf[Boolean])
           Ok(views.html.categories.edit(id, categoryForm.fill(c)))
         }.getOrElse(NotFound)
     }
@@ -100,7 +102,7 @@ object Categories extends SosMessageController {
           c =>
             val q = MongoDBObject("_id" -> new ObjectId(id))
             val color = if (category.color.startsWith("#")) category.color else "#" + category.color
-            val o = $set(Seq("name" -> category.name, "color" -> color, "modifiedAt" -> DateTime.now()))
+            val o = $set(Seq("name" -> category.name, "color" -> color, "free" -> category.free, "modifiedAt" -> DateTime.now()))
             c.update(q, o, false, false)
             Redirect(routes.Categories.index).flashing("actionDone" -> "categoryUpdated")
         }

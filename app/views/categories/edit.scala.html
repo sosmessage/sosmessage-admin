@@ -26,6 +26,16 @@
               <span class="color-tip">(#aarrggbb)</span>
             </div>
           }
+
+          @categoryForm.forField("free") { field =>
+            <label for="@field.name">Free</label>
+            <label class="radio inline">
+              <input type="radio" id="free_true" name="@field.name" value="true" @if(field.value.get.startsWith("true")) {checked="checked"}> True
+            </label>
+            <label class="radio inline">
+              <input type="radio" id="free_false" name="@field.name" value="false" @if(field.value.get.startsWith("false")) {checked="checked"}> False
+            </label>
+          }
         </div>
       </fieldset>
       <div class="actions">
