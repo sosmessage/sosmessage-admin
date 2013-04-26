@@ -6,7 +6,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
     val appName         = "sosmessage-admin"
-    val appVersion      = "2.2"
+    val appVersion      = "2.3-SNAPSHOT"
 
     val appDependencies = Seq(
       "org.mongodb" %% "casbah" % "2.5.0",
