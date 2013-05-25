@@ -71,6 +71,18 @@ $(document).ready(function() {
     })
   }
 
+  function loadVotedMessages() {
+    var ele = $("#stats-voted-messages")
+    var loading = ele.find(".js-loading")
+    loading.show()
+    jsRoutes.controllers.Statistics.votedMessagesStats().ajax({
+        success : function(data) {
+          ele.find(".js-stats-content").html(data)
+          loading.hide()
+        }
+    })
+  }
+
   function loadContributedMessages() {
     var ele = $("#stats-contributed-messages")
     var loading = ele.find(".js-loading")

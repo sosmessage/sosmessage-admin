@@ -146,6 +146,15 @@ object Statistics extends SosMessageController {
       }
   }
 
+  def votedMessagesStats = Auth { implicit ctx => _ =>
+      DB.collection(EventLogsCollectionName) {
+        c =>
+          val totalCount = c.count(MongoDBObject("action" -> "voteMessage",
+            "uid" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
+          Ok(views.html.stats.messages(totalCount))
+      }
+  }
+
   def contributedMessagesStats = Auth { implicit ctx => _ =>
       DB.collection(CategoriesCollectionName) {
         categoriesCollection =>
