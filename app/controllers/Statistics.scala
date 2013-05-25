@@ -10,6 +10,7 @@ object Statistics extends SosMessageController {
 
   val EventLogsCollectionName = "eventlogs"
   val CategoriesCollectionName = "categories"
+  val MessagesCollectionName = "messages"
 
   def index = Auth { implicit ctx => _ =>
       Ok(views.html.stats.index())
@@ -120,6 +121,39 @@ object Statistics extends SosMessageController {
   }
 
   def votedMessagesStats = Auth { implicit ctx => _ =>
+    DB.collection(MessagesCollectionName) {
+      messagesCollection =>
+        DB.collection(CategoriesCollectionName) {
+          categoriesCollection =>
+            DB.collection(EventLogsCollectionName) {
+              c =>
+                val totalCount = c.count(MongoDBObject("action" -> "voteMessage",
+                  "uid" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
+
+                var countPerCategory = Map[String, Long]()
+                c.find(MongoDBObject("action" -> "voteMessage",
+                  "uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""))).toSeq.map(o => {
+                    val categoryId = messagesCollection.findOne(MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString)))
+                      .get("categoryId").toString
+                    val count = countPerCategory.getOrElse(categoryId, 0L).asInstanceOf[Long]
+                    countPerCategory += (categoryId -> (count + 1))
+                  })
+
+                val votedMessagesPerCategory = countPerCategory.toSeq.map(o => {
+                  val q = MongoDBObject("_id" -> new ObjectId(o._1))
+                  categoriesCollection.findOne(q) map {
+                    category =>
+                      val builder = MongoDBObject.newBuilder
+                      builder += ("name" -> category.get("name").toString)
+                      builder += "csum" -> o._2
+                      builder.result
+                  }
+                })
+                Ok(views.html.stats.messages(totalCount, votedMessagesPerCategory.map(o => o.get)))
+            }
+        }
+    }
+
       DB.collection(EventLogsCollectionName) {
         c =>
           val totalCount = c.count(MongoDBObject("action" -> "voteMessage",
