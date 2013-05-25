@@ -70,7 +70,6 @@ GET       /stats/usersStats                                 controllers.Statisti
 GET       /stats/appsStats                                  controllers.Statistics.appsStats
 GET       /stats/randomMessagesStats                        controllers.Statistics.randomMessagesStats
 GET       /stats/bestMessagesStats                          controllers.Statistics.bestMessagesStats
-GET       /stats/worstMessagesStats                         controllers.Statistics.worstMessagesStats
 GET       /stats/votedMessagesStats                         controllers.Statistics.votedMessagesStats
 GET       /stats/contributedMessagesStats                   controllers.Statistics.contributedMessagesStats
 

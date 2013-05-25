@@ -59,18 +59,6 @@ $(document).ready(function() {
     })
   }
 
-  function loadWorstMessages() {
-    var ele = $("#stats-worst-messages")
-    var loading = ele.find(".js-loading")
-    loading.show()
-    jsRoutes.controllers.Statistics.worstMessagesStats().ajax({
-        success : function(data) {
-          ele.find(".js-stats-content").html(data)
-          loading.hide()
-        }
-    })
-  }
-
   function loadVotedMessages() {
     var ele = $("#stats-voted-messages")
     var loading = ele.find(".js-loading")
@@ -100,7 +88,7 @@ $(document).ready(function() {
   setInterval(loadApps, 60000)
   setInterval(loadRandomMessages, 10000)
   setInterval(loadBestMessages, 10000)
-  setInterval(loadWorstMessages, 10000)
+  setInterval(loadVotedMessages, 10000)
   setInterval(loadContributedMessages, 30000)
 
   loadRequests()
@@ -108,7 +96,7 @@ $(document).ready(function() {
   loadApps()
   loadRandomMessages()
   loadBestMessages()
-  loadWorstMessages()
+  loadVotedMessages()
   loadContributedMessages()
 
 })
