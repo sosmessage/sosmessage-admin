@@ -130,12 +130,12 @@ object Statistics extends SosMessageController {
                 val totalCount = c.count(MongoDBObject("action" -> "voteMessage",
                   "uid" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
 
-                var countPerCategory = Map[String, Long]()
-                c.find(MongoDBObject("action" -> "voteMessage",
-                  "uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""))).toSeq.map(o => {
+                var countPerCategory = Map[String, Double]()
+                c.find(MongoDBObject("action" -> "voteMessage", "uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""))).toSeq.foreach(
+                  o => {
                     val categoryId = messagesCollection.findOne(MongoDBObject("_id" -> new ObjectId(o.get("targetObject").toString)))
                       .get("categoryId").toString
-                    val count = countPerCategory.getOrElse(categoryId, 0L).asInstanceOf[Long]
+                    val count = countPerCategory.getOrElse(categoryId, 0.0).asInstanceOf[Long]
                     countPerCategory += (categoryId -> (count + 1))
                   })
 
@@ -149,17 +149,13 @@ object Statistics extends SosMessageController {
                       builder.result
                   }
                 })
-                Ok(views.html.stats.messages(totalCount, votedMessagesPerCategory.map(o => o.get)))
+
+                Ok(views.html.stats.messages(totalCount,
+                  votedMessagesPerCategory.map(o => o.get)
+                    .sortWith(_.get("csum").asInstanceOf[Double] > _.get("csum").asInstanceOf[Double])))
             }
         }
     }
-
-      DB.collection(EventLogsCollectionName) {
-        c =>
-          val totalCount = c.count(MongoDBObject("action" -> "voteMessage",
-            "uid" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
-          Ok(views.html.stats.messages(totalCount, Seq()))
-      }
   }
 
   def contributedMessagesStats = Auth { implicit ctx => _ =>
