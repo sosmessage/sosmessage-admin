@@ -12,7 +12,7 @@
       @appsCount.map { appCount =>
         <tr>
           <td>@appCount.get("appName")</td>
-          <td>@appCount.get("csum") (@{"%2.2f".format(appCount.get("csum").asInstanceOf[Double] * 100 / totalCount)}%)</td>
+          <td>@appCount.get("csum").asInstanceOf[Double].toLong (@{"%2.2f".format(appCount.get("csum").asInstanceOf[Double] * 100 / totalCount)}%)</td>
         </tr>
       }
     </table>
