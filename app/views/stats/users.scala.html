@@ -1,13 +1,20 @@
 @(
-  uniqueUsers: Long
+  totalCount: Long,
+  usersCount: Seq[com.mongodb.DBObject]
 )
   <div>
 
     <table class="table table-condensed">
       <tr>
-        <td>Unique users</td>
-        <td>@uniqueUsers</td>
+        <td>Total</td>
+        <td>@{totalCount}</td>
       </tr>
+      @usersCount.map { userCount =>
+        <tr>
+          <td>@userCount.get("appOs") users</td>
+          <td>@userCount.get("csum").asInstanceOf[Double].toLong</td>
+        </tr>
+      }
     </table>
 
   </div>

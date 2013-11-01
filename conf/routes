@@ -66,8 +66,12 @@ POST      /moderation/messages/all/:state/reject         controllers.Moderation.
 # Event logs
 GET       /stats                                            controllers.Statistics.index
 GET       /stats/requestsStats                              controllers.Statistics.requestsStats
+GET       /stats/iosRequestsStats                           controllers.Statistics.iosRequestsStats
+GET       /stats/androidRequestsStats                       controllers.Statistics.androidRequestsStats
 GET       /stats/usersStats                                 controllers.Statistics.usersStats
 GET       /stats/appsStats                                  controllers.Statistics.appsStats
+GET       /stats/iosAppsStats                               controllers.Statistics.iosAppsStats
+GET       /stats/androidAppsStats                           controllers.Statistics.androidAppsStats
 GET       /stats/randomMessagesStats                        controllers.Statistics.randomMessagesStats
 GET       /stats/bestMessagesStats                          controllers.Statistics.bestMessagesStats
 GET       /stats/votedMessagesStats                         controllers.Statistics.votedMessagesStats

@@ -73,7 +73,8 @@ object Application extends SosMessageController with Secured {
   def javascriptRoutes = Action { implicit request =>
     import routes.javascript._
     Ok(Routes.javascriptRouter("jsRoutes")
-      (Statistics.requestsStats, Statistics.usersStats, Statistics.appsStats,
+      (Statistics.requestsStats, Statistics.iosRequestsStats, Statistics.androidRequestsStats, Statistics.usersStats,
+        Statistics.appsStats, Statistics.iosAppsStats, Statistics.androidAppsStats,
         Statistics.randomMessagesStats, Statistics.bestMessagesStats, Statistics.votedMessagesStats, Statistics.contributedMessagesStats)
     ).as("text/javascript")
   }

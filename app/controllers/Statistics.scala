@@ -42,12 +42,78 @@ object Statistics extends SosMessageController {
       }
   }
 
+  def iosRequestsStats = Auth { implicit ctx => _ =>
+      DB.collection(EventLogsCollectionName) {
+        c =>
+          val now = DateTime.now()
+          val oneHourBefore = ("createdAt" $gte now.minusHours(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "ios")
+          val oneDayBefore = ("createdAt" $gte now.minusDays(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "ios")
+          val oneWeekBefore = ("createdAt" $gte now.minusWeeks(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "ios")
+          val oneMonthBefore = ("createdAt" $gte now.minusMonths(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "ios")
+          val oneYearBefore = ("createdAt" $gte now.minusYears(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "ios")
+
+          val lastHourRequestsCount = c.count(oneHourBefore)
+          val lastDayRequestsCount = c.count(oneDayBefore)
+          val lastWeekRequestsCount = c.count(oneWeekBefore)
+          val lastMonthRequestsCount = c.count(oneMonthBefore)
+          val lastYearRequestsCount = c.count(oneYearBefore)
+
+          Ok(views.html.stats.requests(lastHourRequestsCount, lastDayRequestsCount, lastWeekRequestsCount,
+            lastMonthRequestsCount, lastYearRequestsCount))
+      }
+  }
+
+  def androidRequestsStats = Auth { implicit ctx => _ =>
+      DB.collection(EventLogsCollectionName) {
+        c =>
+          val now = DateTime.now()
+          val oneHourBefore = ("createdAt" $gte now.minusHours(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "android")
+          val oneDayBefore = ("createdAt" $gte now.minusDays(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "android")
+          val oneWeekBefore = ("createdAt" $gte now.minusWeeks(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "android")
+          val oneMonthBefore = ("createdAt" $gte now.minusMonths(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "android")
+          val oneYearBefore = ("createdAt" $gte now.minusYears(1) $lte now) ++
+            ("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""), "appOs" -> "android")
+
+          val lastHourRequestsCount = c.count(oneHourBefore)
+          val lastDayRequestsCount = c.count(oneDayBefore)
+          val lastWeekRequestsCount = c.count(oneWeekBefore)
+          val lastMonthRequestsCount = c.count(oneMonthBefore)
+          val lastYearRequestsCount = c.count(oneYearBefore)
+
+          Ok(views.html.stats.requests(lastHourRequestsCount, lastDayRequestsCount, lastWeekRequestsCount,
+            lastMonthRequestsCount, lastYearRequestsCount))
+      }
+  }
+
   def usersStats = Auth { implicit ctx => _ =>
       DB.collection(EventLogsCollectionName) {
         c =>
           val uniqueUsers = c.distinct("uid",
             MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""))).size
-          Ok(views.html.stats.users(uniqueUsers))
+
+          val reduce = """function(obj, prev) {
+            if (!prev.uids) { prev.uids = []; }
+            if (prev.uids.indexOf(obj.uid) == -1) {
+              prev.uids.push(obj.uid);
+              prev.csum += 1;
+            }
+          }"""
+          val usersCount = c.group(MongoDBObject("appOs" -> true),
+            MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appOs" -> MongoDBObject("$exists" -> true, "$ne" -> "")),
+             MongoDBObject( "csum" -> 0 ), reduce).toSeq
+            .sortBy(_.get("csum").asInstanceOf[Double]).reverse
+
+          Ok(views.html.stats.users(uniqueUsers, usersCount))
       }
   }
 
@@ -59,6 +125,40 @@ object Statistics extends SosMessageController {
           val reduce = """function(obj, prev) { prev.csum += 1; }"""
           val appsCount = c.group(MongoDBObject("appName" -> true),
             MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")),
+            MongoDBObject( "csum" -> 0 ), reduce).toSeq
+            .sortBy(_.get("csum").asInstanceOf[Double]).reverse
+          Ok(views.html.stats.apps(totalCount, appsCount))
+      }
+  }
+
+  def iosAppsStats = Auth { implicit ctx => _ =>
+      DB.collection(EventLogsCollectionName) {
+        c =>
+          val totalCount = c.count(MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appOs" -> "ios",
+            "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
+          val reduce = """function(obj, prev) { prev.csum += 1; }"""
+          val appsCount = c.group(MongoDBObject("appName" -> true),
+            MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appOs" -> "ios",
+            "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")),
+            MongoDBObject( "csum" -> 0 ), reduce).toSeq
+            .sortBy(_.get("csum").asInstanceOf[Double]).reverse
+          Ok(views.html.stats.apps(totalCount, appsCount))
+      }
+  }
+
+  def androidAppsStats = Auth { implicit ctx => _ =>
+      DB.collection(EventLogsCollectionName) {
+        c =>
+          val totalCount = c.count(MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appOs" -> "android",
+            "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")))
+          val reduce = """function(obj, prev) { prev.csum += 1; }"""
+          val appsCount = c.group(MongoDBObject("appName" -> true),
+            MongoDBObject("uid" -> MongoDBObject("$exists" -> true, "$ne" -> ""),
+            "appOs" -> "android",
             "appName" -> MongoDBObject("$exists" -> true, "$ne" -> "")),
             MongoDBObject( "csum" -> 0 ), reduce).toSeq
             .sortBy(_.get("csum").asInstanceOf[Double]).reverse
